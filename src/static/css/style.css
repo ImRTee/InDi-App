@@ -1,0 +1,72 @@
+body{
+    width: 100vw;
+}
+/* The diagram/picture */
+.pic{
+    width: 900px;
+    margin: 50px auto;
+    position: relative;
+    
+}
+
+/* Popover styles */
+.popover{
+    max-width: 500px;
+}
+.popover-btn{
+    width: 30px;
+    background: grey;
+    height:30px;
+    position: absolute;
+    border-radius: 100%;
+    background-color: green !important;
+    border-color: green;
+    color: white;
+    padding-top: 5px;
+    padding-left: 5px;
+}
+.popover-btn:hover{
+    cursor: pointer;
+}
+.popover-btn.active{
+    color: green;
+    background-color: white !important;
+    border: 2px solid green;
+}
+table td, table th{
+    border: 1px solid black;
+}
+
+
+/* Buttons'position */
+.github{
+    top: 15px;
+    left: 70%;
+}
+.jenkins{
+    top: 31%;
+    left:25%;
+}
+.artifactory{
+    top: 51%;
+    left: 25%;
+}
+.base-infra{
+    top: 25%;
+    right: 22%;
+}
+.aws-account-info{
+    width: 25px;
+    height: 25px;
+    top: 20%;
+    right: 38%;
+    padding-bottom: 5px;
+}
+.appd{
+    right: 0;
+    bottom: 35%;    
+}
+.optimist8{
+    left: 70%;
+    bottom: 0
+}
