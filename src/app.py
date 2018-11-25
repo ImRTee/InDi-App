@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import sqlite3
 app = Flask(__name__)
 
-conn = sqlite3.connect('main.db')
+conn = sqlite3.connect('/database/main.db')
 
 @app.route('/')
 def home():
@@ -24,7 +24,7 @@ def savePositions():
 
 @app.route('/get-positions')
 def getPositions():
-    conn = sqlite3.connect('main.db')
+    conn = sqlite3.connect('/database/main.db')
     c = conn.cursor()
     result = c.execute("SELECT * from btnPositions")
     resultList = result.fetchall()
@@ -33,7 +33,7 @@ def getPositions():
 
 # Check if the button has already been inserted into the table
 def isExisitngBtn(id):
-    conn = sqlite3.connect('main.db')
+    conn = sqlite3.connect('/database/main.db')
     c = conn.cursor()
     result = c.execute("SELECT count(*) FROM btnPositions WHERE btnID = :id", {'id': id})
     return result.fetchone()[0]
@@ -41,7 +41,7 @@ def isExisitngBtn(id):
     conn.close()
 
 def insert(id,  left, top ):
-    conn = sqlite3.connect('main.db')
+    conn = sqlite3.connect('/database/main.db')
     c = conn.cursor()
     c.execute("INSERT INTO btnPositions VALUES (?,?,?)", (id, left, top))
     c.execute("SELECT * from btnPositions")
@@ -50,7 +50,7 @@ def insert(id,  left, top ):
     conn.close()
 
 def update(id,  left, top ):
-    conn = sqlite3.connect('main.db')
+    conn = sqlite3.connect('/database/main.db')
     c = conn.cursor()
     c.execute("""UPDATE btnPositions 
                  SET left = ?,
@@ -62,7 +62,7 @@ def update(id,  left, top ):
     conn.close()
 
 def createTable():
-    conn = sqlite3.connect('main.db')
+    conn = sqlite3.connect('/database/main.db')
     c = conn.cursor()
     result = c.execute("""CREATE TABLE btnPositions (
                 btnID text,
