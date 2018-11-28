@@ -81,17 +81,6 @@ $(document).ready(function(){
         $('.upload-form-container').css('display', 'none');
     });
 
-    // Capture response from upload form
-    $('#upload-form')
-        .ajax({
-            url : '/upload', // or whatever
-            dataType : 'json',
-            success : function (response) {
-
-                alert("The server says: " + response);
-            }
-        });
-
 
 
     $('.github').popover(
