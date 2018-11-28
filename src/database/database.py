@@ -3,9 +3,10 @@ from flask import jsonify
 
 
 class Database():
+    print('Yooooo')
     mainDataBasePath = "database/main.db"
 
-    def ini(self):
+    def __init__(self):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         result = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='btnPositions' OR name ='contents' ")
@@ -13,6 +14,7 @@ class Database():
         if  len(tableList) == 0:     #if there is no table exists
             self.createBtnPositionsTable()
             self.createContentTable()
+            self.insertDefaultImagePath()
 
         conn.commit()
         conn.close()
@@ -28,8 +30,6 @@ class Database():
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         c.execute("INSERT INTO btnPositions VALUES (?,?,?)", (id, left, top))
-        c.execute("SELECT * from btnPositions")
-        print(c.fetchall())
         conn.commit()
         conn.close()
 
@@ -39,30 +39,51 @@ class Database():
         c.execute("""UPDATE btnPositions 
                      SET left = ?,
                            top = ?
-                     WHERE btnID = ?""", (left, top, id))
+                     WHERE btnID = ? """, (left, top, id))
 
         c.execute("SELECT * from btnPositions")
         conn.commit()
         conn.close()
 
-    def createBtnPositionsTable(self):
+    def  updateImgPath(self, path):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
-        c.execute("""CREATE TABLE btnPositions (
-                    btnID text,
-                    left real,
-                    top real
-                )""")
-        print("BtnPositions Table Created")
+        c.execute("""UPDATE contents 
+                  SET  content =  ?
+                   WHERE btnID =?""", (path, 'image') )
+        print(c.fetchall())
+        conn.commit()
+        conn.close()
+
+
+    def createBtnPositionsTable(self):
+            conn = sqlite3.connect(self.mainDataBasePath)
+            c = conn.cursor()
+            c.execute("""CREATE TABLE btnPositions (
+                        btnID text,
+                        left real,
+                        top real
+                    )""")
+            print("BtnPositions Table Created")
 
     def createContentTable(self):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         c.execute("""CREATE TABLE contents (
                     btnID text,
-                    htmlContent text
+                    content text
                 )""")
         print("Content Table Created")
+
+    def insertDefaultImagePath(self):
+        conn = sqlite3.connect(self.mainDataBasePath)
+        c = conn.cursor()
+        c.execute("INSERT INTO contents VALUES (?,?)", ('image', 'empty'))
+        conn.commit()
+        conn.close()
+        print('Default image path inserted')
+
+
 
 
 

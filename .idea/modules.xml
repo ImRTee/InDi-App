@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/nab-project.iml" filepath="$PROJECT_DIR$/.idea/nab-project.iml" />
       <module fileurl="file://$PROJECT_DIR$/nab-project.iml" filepath="$PROJECT_DIR$/nab-project.iml" />
     </modules>
   </component>

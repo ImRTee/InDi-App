@@ -17,20 +17,36 @@ $(document).ready(function(){
                 }
     });
 
+    //Retrieve  image url
+    $.ajax({
+        type: 'GET',
+        url: "/get-image",
+        async: 'asynchronous',
+        success: function(response){
+            var imagePath = response[0][0];
+            $('#diagram-img').attr('src', imagePath)
+        }
+    });
+
 
     //When the edit button is clicked
     $('.mode-btn').click(  ()=>{
         if ($('.mode-btn').text()== 'Edit') {
             //Add class draggable for all children under class main-content
             $('.main-content > div').addClass('draggable');
+
+            $('.mode-btn').text('Display'); //Change mode button to display mode
+            $('.mode-btn').removeClass('btn-success').addClass('btn-primary') ; //Change mode's button color
+
+            $('.mode-text').text('Edit mode');
+
+            $('.tool-btns').css('display', 'block');
             // Initialize and configure draggable function After every drag event: the id, positions[top,left] are written to btnPositions table
             $('.draggable').draggable({
                 stop: function (event, ui) {
-
                     var btnObj = {};
                     btnObj['id'] = this.id;
                     btnObj['position'] = ui.position;
-
                     $.ajax({
                         type: 'POST',
                         url: "/save-positions",
@@ -44,16 +60,37 @@ $(document).ready(function(){
             });
             $('.draggable').draggable('enable'); //Enable draggable
 
-            $('.mode-btn').text('Display'); //Change mode button to display mode
-            $('.mode-btn').removeClass('btn-success').addClass('btn-primary')  //Change mode's button color
         } else if ($('.mode-btn').text()== 'Display'){
             $('.draggable').draggable('disable');
 
             $('.mode-btn').text('Edit'); //Edit
             $('.mode-btn').removeClass('btn-primary').addClass('btn-success') //Change mode button's color
+            $('.mode-text').text('Display mode');
+            $('.tool-btns').css('display', 'none');
 
         }
     });
+    // End  of mode-btn clicking effect
+
+    // Upload button effect
+    $('.upload-btn').on('click', function(){
+        $('.upload-form-container').css('display', 'block');
+    });
+
+    $('.close-upload').on('click', function () {
+        $('.upload-form-container').css('display', 'none');
+    });
+
+    // Capture response from upload form
+    $('#upload-form')
+        .ajax({
+            url : '/upload', // or whatever
+            dataType : 'json',
+            success : function (response) {
+
+                alert("The server says: " + response);
+            }
+        });
 
 
 
@@ -97,7 +134,7 @@ $(document).ready(function(){
 
              `
         }
-    )
+    );
 
     $('.artifactory').popover(
         {

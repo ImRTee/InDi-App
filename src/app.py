@@ -1,18 +1,51 @@
-from flask import Flask, render_template, request, jsonify
+import os
+from flask import Flask, render_template, request, jsonify, flash, url_for, send_from_directory
 from src.database.database import  Database
 import sqlite3
+from werkzeug.utils import secure_filename, redirect
+
+UPLOAD_FOLDER = 'static/images'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = Database()
 
 @app.route('/')
 def home():
-    print('Awesome')
     return  render_template('index.html')
 
-@app.route('/admin')
-def admin():
-    return render_template('admin.html')
+# Source: http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
+def allowed_file(filename):
+        return '.' in filename and \
+               filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# Source: https://stackoverflow.com/questions/44926465/upload-image-in-flask
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # Update image path in the database
+            db.updateImgPath('../static/images/' + filename)
+            return  redirect('/')
+    return  ''
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
 
 @app.route('/save-positions', methods=['POST'])
 def savePositions():
@@ -35,6 +68,15 @@ def getPositions():
     resultList = result.fetchall()
     return jsonify(resultList)
 
+@app.route('/get-image')
+def getImagePath():
+    conn = sqlite3.connect(db.mainDataBasePath)
+    c = conn.cursor()
+    c.execute("SELECT  content  from contents WHERE btnID='image'")
+    result = c.fetchall()
+    return jsonify(result)
+
+
 # Check if the button has already been inserted into the table
 def isExisitngBtn(id):
     conn = sqlite3.connect(db.mainDataBasePath)
@@ -44,6 +86,7 @@ def isExisitngBtn(id):
     conn.commit()
     conn.close()
     return  isExist
+
 
 
 if __name__ == '__main__':

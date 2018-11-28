@@ -1,7 +1,45 @@
 body{
     width: 100vw;
+    position: relative;
 }
-/* The diagram/picture */
+
+/*******Header style**********/
+.header-right{
+    position: relative;
+}
+.mode-text{
+    position: absolute;
+    top: 10px;
+    right: 40px;
+}
+.mode-btn{
+    position: absolute;
+    right: 30px;
+    top: 30px;
+}
+.tool-btns{
+    display: none;
+    position: relative;
+    top: 100px;
+    right: 30px;
+    padding-left: 50px;
+}
+/*Tool buttons*/
+.tool-btn{
+    width:  40px;
+    height: 40px;
+    border-radius: 100%;
+    background-color:  Orange !important;
+    border:  none ;
+}
+.tool-btn:focus{
+    outline:  none;
+}
+.tool-btn:hover{
+    cursor: pointer;
+}
+
+/* The diagram picture */
 .main-content{
     width: 900px;
     margin: 50px auto;
@@ -35,6 +73,30 @@ body{
 table td, table th{
     border: 1px solid black;
 }
+
+.upload-form-container{
+    display: none;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -20%);
+    -moz-transform: translate(-50%, -20%);
+    transform: translate(-50%, -20%);
+    box-shadow:  0  2px 10px 4px  black;
+}
+.close-upload{
+    position: fixed;
+    top: 5px;
+    right: 5px;
+    color: red;
+    border-radius: 100%;
+    font-size:  30px;
+}
+.close-upload:hover{
+    cursor: pointer;
+}
+
+
 
 
 /* Buttons'position */
