@@ -2,11 +2,10 @@ body{
     width: 100vw;
 }
 /* The diagram/picture */
-.pic{
+.main-content{
     width: 900px;
     margin: 50px auto;
     position: relative;
-    
 }
 
 /* Popover styles */

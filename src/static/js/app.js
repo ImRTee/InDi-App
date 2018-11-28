@@ -1,4 +1,5 @@
 $(document).ready(function(){
+
     //Retrieve button position from the database
     $.ajax({
         type: 'GET',
@@ -8,32 +9,52 @@ $(document).ready(function(){
                     //Button types are array of array
                     for (var i = 0; i < response.length; i++){
                         var button = response[i];
-                        console.log(button)
                         $("#" + button[0]).css('left', button[1])
                         $("#" + button[0]).css('top', button[2])
                     }
-                }
-    })
+                    console.log('button positions updated')
 
-//    After every drag event: the id, positions[top,left] are written to btnPositions table
-    $('.draggable').draggable({
-        stop: function (event, ui) {
-            var obj= {};
-            obj['id'] = this.id;
-            obj['position'] = ui.position;
-
-            $.ajax({
-                type: 'POST',
-                url:"/save-positions",
-                data: JSON.stringify(obj),
-                async: 'asynchronous',
-                success: function(response){
-                    console.log(response);
                 }
-            })
+    });
+
+
+    //When the edit button is clicked
+    $('.mode-btn').click(  ()=>{
+        if ($('.mode-btn').text()== 'Edit') {
+            //Add class draggable for all children under class main-content
+            $('.main-content > div').addClass('draggable');
+            // Initialize and configure draggable function After every drag event: the id, positions[top,left] are written to btnPositions table
+            $('.draggable').draggable({
+                stop: function (event, ui) {
+
+                    var btnObj = {};
+                    btnObj['id'] = this.id;
+                    btnObj['position'] = ui.position;
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "/save-positions",
+                        data: JSON.stringify(btnObj),
+                        async: 'asynchronous',
+                        success: function (response) {
+                            console.log('Position saved')
+                        }
+                    })
+                }
+            });
+            $('.draggable').draggable('enable'); //Enable draggable
+
+            $('.mode-btn').text('Display'); //Change mode button to display mode
+            $('.mode-btn').removeClass('btn-success').addClass('btn-primary')  //Change mode's button color
+        } else if ($('.mode-btn').text()== 'Display'){
+            $('.draggable').draggable('disable');
+
+            $('.mode-btn').text('Edit'); //Edit
+            $('.mode-btn').removeClass('btn-primary').addClass('btn-success') //Change mode button's color
 
         }
     });
+
 
 
     $('.github').popover(
@@ -181,9 +202,5 @@ $(document).ready(function(){
         console.log('yes')
     })
 
- 
-
-
-
-    
 })
+
