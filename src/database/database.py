@@ -3,9 +3,7 @@ from flask import jsonify
 
 
 class Database():
-    print('Yooooo')
     mainDataBasePath = "database/main.db"
-
     def __init__(self):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
@@ -33,13 +31,20 @@ class Database():
         conn.commit()
         conn.close()
 
+    def insertContent(self, id, content):
+        conn = sqlite3.connect(self.mainDataBasePath)
+        c = conn.cursor()
+        c.execute("INSERT INTO contents VALUES (?,?)", (id, content))
+        conn.commit()
+        conn.close()
+
     def updatePos(self, id,  left, top):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         c.execute("""UPDATE btnPositions 
                      SET left = ?,
                            top = ?
-                     WHERE btnID = ? """, (left, top, id))
+                     WHERE id = ? """, (left, top, id))
 
         c.execute("SELECT * from btnPositions")
         conn.commit()
@@ -50,7 +55,7 @@ class Database():
         c = conn.cursor()
         c.execute("""UPDATE contents 
                   SET  content =  ?
-                   WHERE btnID =?""", (path, 'image') )
+                   WHERE id =?""", (path, 'image') )
         print(c.fetchall())
         conn.commit()
         conn.close()
@@ -60,7 +65,7 @@ class Database():
             conn = sqlite3.connect(self.mainDataBasePath)
             c = conn.cursor()
             c.execute("""CREATE TABLE btnPositions (
-                        btnID text,
+                        id text,
                         left real,
                         top real
                     )""")
@@ -70,7 +75,7 @@ class Database():
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         c.execute("""CREATE TABLE contents (
-                    btnID text,
+                    id text,
                     content text
                 )""")
         print("Content Table Created")

@@ -65,6 +65,9 @@ body{
 .popover-btn:hover{
     cursor: pointer;
 }
+.popover-header{
+    height: 40px;
+}
 .popover-btn.active{
     color: green;
     background-color: white !important;
@@ -73,61 +76,130 @@ body{
 table td, table th{
     border: 1px solid black;
 }
+.popover-body{
+    position: relative;
+}
+.popover-tool{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: blue;
+    cursor: pointer;
+}
 
+/*Upload Form Style*/
 .upload-form-container{
     display: none;
     position: absolute;
     top: 20%;
     left: 50%;
+}
+
+.box-shadow{
     -webkit-transform: translate(-50%, -20%);
     -moz-transform: translate(-50%, -20%);
     transform: translate(-50%, -20%);
     box-shadow:  0  2px 10px 4px  black;
+    background-color:  dodgerblue;
+    border: 1px solid dodgerblue;
 }
-.close-upload{
+.close-upload, .close-add{
     position: fixed;
     top: 5px;
     right: 5px;
     color: red;
     border-radius: 100%;
     font-size:  30px;
+    cursor: pointer;
 }
 .close-upload:hover{
     cursor: pointer;
 }
 
+.intLink { cursor: pointer; }
+img.intLink { border: 0; }
+#toolBar1 select { font-size:10px; }
+#newContent {
+    width: 540px;
+    height: 200px;
+    border: 1px #000000 solid;
+    padding: 12px;
+    overflow: scroll;
+}
+#newContent #sourceText {
+    padding: 0;
+    margin: 0;
+    min-width: 498px;
+    min-height: 200px;
+}
+#editMode label { cursor: pointer; }
+
+/*AddForm*/
+#addForm{
+    display: none;
+    position: absolute;
+    width: 600px;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%,-30%);
+}
+.intLink { cursor: pointer; }
+img.intLink { border: 0; }
+#toolBar1 select { font-size:10px; }
+#newContent {
+    width: 500px;
+    height: 200px;
+    border: 1px #000000 solid;
+    padding: 12px;
+    overflow: scroll;
+}
+
+#newContent#sourceText {
+    padding: 0;
+    margin: 0;
+    min-width: 498px;
+    min-height: 200px;
+}
+#editMode label { cursor: pointer; }
+
+
+
+
+
+
+
 
 
 
 /* Buttons'position */
-.github{
-    top: 15px;
-    left: 70%;
-}
-.jenkins{
-    top: 31%;
-    left:25%;
-}
-.artifactory{
-    top: 51%;
-    left: 25%;
-}
-.base-infra{
-    top: 25%;
-    right: 22%;
-}
-.aws-account-info{
-    width: 25px;
-    height: 25px;
-    top: 20%;
-    right: 38%;
-    padding-bottom: 5px;
-}
-.appd{
-    right: 0;
-    bottom: 35%;    
-}
-.optimist8{
-    left: 70%;
-    bottom: 0
-}
+/*.github{*/
+    /*top: 15px;*/
+    /*left: 70%;*/
+/*}*/
+/*.jenkins{*/
+    /*top: 31%;*/
+    /*left:25%;*/
+/*}*/
+/*.artifactory{*/
+    /*top: 51%;*/
+    /*left: 25%;*/
+/*}*/
+/*.base-infra{*/
+    /*top: 25%;*/
+    /*right: 22%;*/
+/*}*/
+/*.aws-account-info{*/
+    /*width: 25px;*/
+    /*height: 25px;*/
+    /*top: 20%;*/
+    /*right: 38%;*/
+    /*padding-bottom: 5px;*/
+/*}*/
+/*.appd{*/
+    /*right: 0;*/
+    /*bottom: 35%;    */
+/*}*/
+/*.optimist8{*/
+    /*left: 70%;*/
+    /*bottom: 0*/
+/*}*/

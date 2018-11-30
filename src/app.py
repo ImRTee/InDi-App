@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, jsonify, flash, url_for, send_from_directory
-from src.database.database import  Database
+from src.database.database import Database
 import sqlite3
 from werkzeug.utils import secure_filename, redirect
 
@@ -8,7 +8,7 @@ UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 db = Database()
 
 @app.route('/')
@@ -27,13 +27,16 @@ def upload_file():
         # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
-            return redirect(request.url)
+            return redirect('No file part')
         file = request.files['file']
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
             flash('No selected file')
-            return redirect(request.url)
+            return 'Sorry, please select a file to upload'
+        if not allowed_file(file.filename):
+            flash('No selected file')
+            return 'Incorrect file type. Please only upload .png, .jpg and .jpeg files'
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -60,6 +63,15 @@ def savePositions():
         db.insertPos(id, left, top)
     return 'Position successfully updated'
 
+@app.route('/save-content', methods=['POST'])
+def saveContent():
+    data = request.get_json('obj')
+    id = data['id']
+    content = data['content']
+    db.insertContent(id, content)
+    return ''
+
+
 @app.route('/get-positions')
 def getPositions():
     conn = sqlite3.connect(db.mainDataBasePath)
@@ -72,7 +84,15 @@ def getPositions():
 def getImagePath():
     conn = sqlite3.connect(db.mainDataBasePath)
     c = conn.cursor()
-    c.execute("SELECT  content  from contents WHERE btnID='image'")
+    c.execute("SELECT  content  from contents WHERE id='image'")
+    result = c.fetchall()
+    return jsonify(result)
+
+@app.route('/get-contents')
+def getContents():
+    conn = sqlite3.connect(db.mainDataBasePath)
+    c = conn.cursor()
+    c.execute("SELECT  *  from contents WHERE id NOT IN ('image')") #Get all content not image
     result = c.fetchall()
     return jsonify(result)
 
@@ -81,13 +101,11 @@ def getImagePath():
 def isExisitngBtn(id):
     conn = sqlite3.connect(db.mainDataBasePath)
     c = conn.cursor()
-    result = c.execute("SELECT count(*) FROM btnPositions WHERE btnID = :id", {'id': id})
+    result = c.execute("SELECT count(*) FROM btnPositions WHERE id = :id", {'id': id})
     isExist = result.fetchone()[0]
     conn.commit()
     conn.close()
     return  isExist
 
-
-
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
