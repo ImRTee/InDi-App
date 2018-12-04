@@ -3,7 +3,7 @@ var oDoc, sDefTxt;
 function initDoc() {
     oDoc = document.getElementById("newContent");
     sDefTxt = oDoc.innerHTML;
-    if (document.addForm.switchMode.checked) { setDocMode(true); }
+    if (document.contentForm.switchMode.checked || document.contentUpdateForm.switchMode.checked)  { setDocMode(true); }
 }
 
 function formatDoc(sCmd, sValue) {
@@ -11,7 +11,7 @@ function formatDoc(sCmd, sValue) {
 }
 
 function validateMode() {
-    if (!document.addForm.switchMode.checked) { return true ; }
+    if (!document.contentForm.switchMode.checked || document.contentUpdateForm.switchMode.checked) { return true ; }
     alert("Uncheck \"Show HTML\".");
     oDoc.focus();
     return false;

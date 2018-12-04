@@ -1,6 +1,3 @@
-
-
-
 $(document).ready(function(){
     //Retrieve  image url
     $.ajax({
@@ -20,17 +17,41 @@ $(document).ready(function(){
         success: function(response){
             for ( var i = 0; i < response.length; i++){
                 var id = response[i][0];
+                var title = id.replace(/-/g, " ");
                 var content = response[i][1];
-
                 var htmlButton = `
-                            '<div id=${id} class="popover-btn p-l-1" data-container="body" data-toggle="popover" data-placement="right" data-html="true"
-                                title="<div class='popover-tool'><i class='far fa-edit'></i></div> "
+                            <div id=${id} class="popover-btn p-l-1" data-container="body" data-toggle="popover" data-placement="right" data-html="true"
+                                title="<div class='pop-up-title text-center' >
+                                                <h4><strong>${title}</strong></h4>
+                                           </div>
+                                           <div  class='${id} popover-tool' style='margin-right: 15px'>
+                                                <i class=' far fa-edit '></i>
+                                            </div>
+                                             <div class='popover-tool'>
+                                                 <i class='far fa-trash-alt' style='color: red'></i>
+                                             </div>"
                                 data-content= "${content}">
                                 <i class="fas fa-angle-double-down"></i>
                              </div>`;
-                console.log(htmlButton);
                   $('.main-content').append(htmlButton);
-                  $(`#${id}`).popover();
+                  $(`#${id}`).popover()
+
+                //When edit-content button on each popover is clicked, show up the contentUpdateForm
+                $('body').on('click', `.popover > .popover-header >  .${id}`, function(){
+                    //Since the id of the button was attached as the first class of the edit-button when the popover-btn was created, we get the id back as below
+                    var id = this.classList[0];
+                    //Use this id to get the  title and data-content of the popover-btn
+                    var originTitle = id.replace(/-/g, " ")
+                    var originContent = $(`#${id}`).attr('data-content');
+                    //Popup the contentUpdateForm and load up the original details
+                    displayEffect('#contentUpdateForm','block');
+                    $('#contentUpdateForm-title').val(originTitle);
+                    $('#newUpdateContent').html(originContent);
+
+                    //Hide all popovers
+                    $('.popover-btn').popover('hide');
+
+                });
             }
             $('.popover-btn').on('click', function(){
                 if ($(this).hasClass('active')){
@@ -38,13 +59,41 @@ $(document).ready(function(){
                     // Arrow change
                     $(this).children().removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
                 } else{
-                    $(this).addClass('active')
+                    $(this).addClass('active');
                     $(this).addClass('');
                     // Arrow change
                     $(this).children().removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
                 }
             });
 
+
+
+
+            //Add content mechanism
+            $('.addBtn').on('click', function (e) {
+                e.preventDefault();
+                if ( $('#contentForm-title').val() == "" || $('#newContent').text() == ""){
+                    alert('Please fill out required field(s)')
+                }else {
+                    var id = $('#contentForm-title').val().replace(/ /g, "-"); //removeSpace
+                    var content = $('#newContent').html().replace(/"/g, " ' ");
+                    var obj = {
+                        id: id,
+                        content: content
+                    };
+                    console.log(obj);
+                    $.ajax({
+                        type: 'POST',
+                        url: "/save-content",
+                        data: JSON.stringify(obj),
+                        async: 'asynchronous',
+                        success: function (response) {
+                            alert('New button has been added');
+                            window.location.href = "/"
+                        }
+                    })
+                }
+            });
             //After the buttons is created, get their positions
             $.ajax({
                 type: 'GET',
@@ -54,25 +103,24 @@ $(document).ready(function(){
                     //Button types are array of array
                     for (var i = 0; i < response.length; i++){
                         var button = response[i];
-                        $("#" + button[0]).css('left', button[1]);
-                        $("#" + button[0]).css('top', button[2]);
+                        $(`#${button[0]}`).css('left', button[1]);
+                        $(`#${button[0]}`).css('top', button[2]);
                     }
                     console.log('button positions updated')
                 }
             });
+
+
         }
     });
-    //Retrieve button position from the database
+//End of retrieving content
 
 
-
-    //When the edit button is clicked
+    //When the edit button is clicked,
     $('.mode-btn').click(  ()=>{
         if ($('.mode-btn').text()== 'Edit') {
             //Add class draggable for all children under class main-content
             $('.main-content > div').addClass('draggable');
-            //Make popover-body to be editable
-            $('.popover-body').attr('contentEditable', 'true');
             //Change mode button to display mode
             $('.mode-btn').text('Display');
             //Change mode's button color
@@ -81,6 +129,9 @@ $(document).ready(function(){
             $('.mode-text').text('Edit mode');
             //Show tool buttons
             $('.tool-btns').css('display', 'block');
+
+            //Make popover buttons  visible
+            $('.popover-btn').css('opacity', '1');
             // Initialize and configure draggable function After every drag event: the id, positions[top,left] are written to btnPositions table
             $('.draggable').draggable({
                 stop: function (event, ui) {
@@ -99,9 +150,7 @@ $(document).ready(function(){
                 }
             });
             $('.draggable').draggable('enable'); //Enable draggable
-
-
-
+        //In display mode
         } else if ($('.mode-btn').text()== 'Display'){
             $('.draggable').draggable('disable');
             //Make popover-body to be editable
@@ -110,9 +159,15 @@ $(document).ready(function(){
             $('.mode-btn').text('Edit');
             //Change mode button's color
             $('.mode-btn').removeClass('btn-primary').addClass('btn-success');
+            //Update the mode status
             $('.mode-text').text('Display mode');
+            //Hide all popovers
+            $('.popover-btn').popover('hide');
+            //Hide all tool buttons
             $('.tool-btns').css('display', 'none');
-            $('.popover-btn').popover('hide')
+            //Make popover buttons  invisible
+            $('.popover-btn').css('opacity', '0');
+
 
         }
     });
@@ -120,41 +175,33 @@ $(document).ready(function(){
 
     // Upload button effect
     $('.upload-btn-tool').on('click', function(){
-        $('.upload-form-container').css('display', 'block');
+        displayEffect('.upload-form-container', 'block')
     });
 
     $('.close-upload').on('click', function () {
-        $('.upload-form-container').css('display', 'none');
+        displayEffect('.upload-form-container', 'none')
     });
 
     $('.add-btn-tool').on('click', function(){
-        $('#addForm').css('display', 'block');
+        displayEffect('#contentForm', 'block')
     });
 
     $('.close-add').on('click', function () {
-        $('#addForm').css('display', 'none');
+        displayEffect('#contentForm', 'none')
+    });
+    $('.close-update').on('click', function () {
+        displayEffect('#contentUpdateForm', 'none')
     });
 
-    $('.addBtn').on('click', function (e) {
-        e.preventDefault();
-        var id = $('#title').val().replace(" ", "-").toLowerCase();
-        var content = $('#newContent').html();
-        var obj = {
-            id: id,
-            content: content
-        };
-        console.log(obj);
 
-        $.ajax({
-            type: 'POST',
-            url: "/save-content",
-            data: JSON.stringify(obj),
-            async: 'asynchronous',
-            success: function (response) {
-                console.log(response)
-            }
-        })
-    });
+
+
+    // Use to diplay or hide an element
+    // Input element: String (e.g .class, #id)
+    //             type: String (block or none)
+    function displayEffect(element, type){
+        $(element).css('display',type)
+    }
 
 
 
@@ -302,5 +349,5 @@ $(document).ready(function(){
         }
     });
 
-})
+});
 

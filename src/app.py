@@ -1,15 +1,23 @@
+import  sys
 import os
-from flask import Flask, render_template, request, jsonify, flash, url_for, send_from_directory
-from src.database.database import Database
+from flask import Flask, render_template, request, jsonify, flash, send_from_directory
+from common.database import Database
 import sqlite3
 from werkzeug.utils import secure_filename, redirect
 
+# Upload folder: where you want to store upload images, use relative path in production server
 UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 db = Database()
+
+#print('********PYTHONPATH*********')
+#for p in sys.path:
+#    print(p)
+#print('******************************')
+
 
 @app.route('/')
 def home():
