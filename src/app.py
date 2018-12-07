@@ -73,9 +73,6 @@ def updateSize():
     return 'Size successfully updated'
 
 
-
-
-
 @app.route('/save-content', methods=['POST'])
 def saveContent():
     data = request.get_json('obj')
@@ -118,6 +115,11 @@ def getContents():
     result = c.fetchall()
     return jsonify(result)
 
+@app.route('/delete-button', methods=['POST'])
+def deleteBtn():
+    id = request.get_json('id')
+    db.deleteBtn(id)
+    return ''
 
 
 # # Check if the button has already been inserted into the table

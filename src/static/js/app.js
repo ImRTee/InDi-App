@@ -29,7 +29,6 @@ $(document).ready(function(){
             //         5: height ( real )
             //     ]
             // ]
-            console.log('Response  to get buttons', response);
             // Start a loop to get popover-btn details
             for ( var i = 0; i < response.length; i++){
                 // Create buttons and add to the UI
@@ -41,10 +40,10 @@ $(document).ready(function(){
                                 title="<div class='pop-up-title text-center' >
                                                 <h4><strong>${title}</strong></h4>
                                            </div>
-                                           <div  class='${id} popover-tool' style='margin-right: 15px'>
+                                           <div  class='${id} popover-edit popover-tool' style='margin-right: 15px'>
                                                 <i class=' far fa-edit '></i>
                                             </div>
-                                             <div class='popover-tool'>
+                                             <div class='${id} popover-delete popover-tool'>
                                                  <i class='far fa-trash-alt' style='color: red'></i>
                                              </div>"
                                 data-content= "${content}">
@@ -56,7 +55,7 @@ $(document).ready(function(){
                   $(`#${id}`).popover();
 
                   //When edit-content button on each popover is clicked, show up the contentUpdateForm
-                $('body').on('click', `.popover > .popover-header >  .${id}`, function(){
+                $('body').on('click', `.popover > .popover-header >  .${id}.popover-edit`, function(){
                     //Since the id of the button was attached as the first class of the edit-button when the popover-btn was created, we get the id back as below
                     var id = this.classList[0];
                     //Use this id to get the  title and data-content of the popover-btn
@@ -87,7 +86,24 @@ $(document).ready(function(){
                     })
                 });
 
-                //After the buttons is created, get their positions
+                //When the popover-delete button is clicked:
+                $('body').on('click', `.popover > .popover-header >  .${id}.popover-delete`, function() {
+                    if(confirm('Are you sure you want to delete this popover button?')){
+                        //Since the id of the button was attached as the first class of the edit-button when the popover-btn was created, we get the id back as below
+                        var id = this.classList[0];
+                        console.log(id);
+                        $.ajax({
+                            type: 'POST',
+                            url: '/delete-button',
+                            data: JSON.stringify(id),
+                            success: function (response) {
+                                window.location.href = "/"
+                            }
+                        })
+                    }
+                });
+
+                    //After the buttons is created, get their positions
                 var leftPosition = response[i][2];
                 var rightPosition = response[i][3];
                 $(`#${id}`).css('left', leftPosition);
@@ -118,7 +134,6 @@ $(document).ready(function(){
 
             //Add content mechanism
             $('#addContentBtn').on('click', function (e){
-                console.log('what the heck?');
                 e.preventDefault();
                 if ( $('#contentForm-title').val() == "" || $('#newContent').text() == ""){
                     alert('Please fill out required field(s)')
@@ -130,7 +145,6 @@ $(document).ready(function(){
                         id: id,
                         content: content
                     };
-                    console.log(obj);
                     $.ajax({
                         type: 'POST',
                         url: "/save-content",

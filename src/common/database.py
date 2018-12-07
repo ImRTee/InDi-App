@@ -100,6 +100,14 @@ class Database():
         conn.close()
         print('Default image path inserted')
 
+    def deleteBtn(self, id):
+        conn = sqlite3.connect(self.mainDataBasePath)
+        c = conn.cursor()
+        c.execute("DELETE FROM PopoverBtn WHERE  id = ?", (id, ))
+        conn.commit()
+        conn.close()
+
+
 
 
 
