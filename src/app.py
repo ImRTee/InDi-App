@@ -23,11 +23,6 @@ db = Database()
 def home():
     return  render_template('index.html')
 
-# Source: http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
-def allowed_file(filename):
-        return '.' in filename and \
-               filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 # Source: https://stackoverflow.com/questions/44926465/upload-image-in-flask
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -58,18 +53,28 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
 
-@app.route('/save-positions', methods=['POST'])
-def savePositions():
+@app.route('/update-position', methods=['POST'])
+def updatePosition():
     data = request.get_json('obj')
     id = data['id']
     left = data['position']['left']
     top = data ['position']['top']
-
-    if isExisitngBtn(id):
-        db.updatePos(id, left, top)
-    else:
-        db.insertPos(id, left, top)
+    db.updatePos(id, left, top)
     return 'Position successfully updated'
+
+@app.route('/update-size', methods=['POST'])
+def updateSize():
+    data = request.get_json('sizeObj')
+    print(data)
+    id = data['id']
+    width = data['size']['width']
+    height = data['size']['height']
+    db.updateSize(id, width, height)
+    return 'Size successfully updated'
+
+
+
+
 
 @app.route('/save-content', methods=['POST'])
 def saveContent():
@@ -79,41 +84,56 @@ def saveContent():
     db.insertContent(id, content)
     return ''
 
+@app.route('/update-content', methods=['POST'])
+def updateContent():
+    data = request.get_json('newContentObj')
+    originId = data['originId']
+    newId = data['newId']
+    newContent = data['newContent']
+    db.updateContent(originId, newId, newContent)
+    return ''
 
-@app.route('/get-positions')
-def getPositions():
-    conn = sqlite3.connect(db.mainDataBasePath)
-    c = conn.cursor()
-    result = c.execute("SELECT * from btnPositions")
-    resultList = result.fetchall()
-    return jsonify(resultList)
+
+# @app.route('/get-positions')
+# def getPositions():
+#     conn = sqlite3.connect(db.mainDataBasePath)
+#     c = conn.cursor()
+#     result = c.execute("SELECT * from PopoverBtn")
+#     resultList = result.fetchall()
+#     return jsonify(resultList)
 
 @app.route('/get-image')
 def getImagePath():
     conn = sqlite3.connect(db.mainDataBasePath)
     c = conn.cursor()
-    c.execute("SELECT  content  from contents WHERE id='image'")
+    c.execute("SELECT  content  from PopoverBtn WHERE id='image'")
     result = c.fetchall()
     return jsonify(result)
 
-@app.route('/get-contents')
+@app.route('/get-popover-buttons')
 def getContents():
     conn = sqlite3.connect(db.mainDataBasePath)
     c = conn.cursor()
-    c.execute("SELECT  *  from contents WHERE id NOT IN ('image')") #Get all content not image
+    c.execute("SELECT  *  from PopoverBtn WHERE id NOT IN ('image')") #Get all content not image
     result = c.fetchall()
     return jsonify(result)
 
 
-# Check if the button has already been inserted into the table
-def isExisitngBtn(id):
-    conn = sqlite3.connect(db.mainDataBasePath)
-    c = conn.cursor()
-    result = c.execute("SELECT count(*) FROM btnPositions WHERE id = :id", {'id': id})
-    isExist = result.fetchone()[0]
-    conn.commit()
-    conn.close()
-    return  isExist
+
+# # Check if the button has already been inserted into the table
+# def isExisitngBtn(id):
+#     conn = sqlite3.connect(db.mainDataBasePath)
+#     c = conn.cursor()
+#     result = c.execute("SELECT count(*) FROM PopoverBtn WHERE id = :id", {'id': id})
+#     isExist = result.fetchone()[0]
+#     conn.commit()
+#     conn.close()
+#     return  isExist
+
+# Source: http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == '__main__':
     app.run(debug=True)

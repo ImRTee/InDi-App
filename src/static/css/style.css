@@ -51,21 +51,22 @@ body{
     max-width: 500px;
 }
 .popover-btn{
+    position: relative;
     opacity: 0;
-    text-align: center;
-    width: 80px;
-    height: 40px;
     position: absolute;
     border-radius:  14px;
-    background-color: green !important;
-    border-color: green;
+    background-color: #31803f !important;
+    border-color: #31803f;
     color: white;
-    padding-top: 5px;
-    padding-left: 5px;
     top: 0;
     right: 0;
 }
-
+.popover-icon{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 .popover-btn:hover{
     cursor: pointer;
 }
@@ -93,6 +94,7 @@ table td, table th{
 
 /*Upload Form Style*/
 .upload-form-container{
+    background: white;
     display: none;
     position: absolute;
     top: 20%;
@@ -103,13 +105,15 @@ table td, table th{
     -webkit-transform: translate(-50%, -20%);
     -moz-transform: translate(-50%, -20%);
     transform: translate(-50%, -20%);
-    box-shadow:  0  2px 10px 4px  black;
+    box-shadow:  0px 5px 11px 0px rgba(0,0,0,0.18), 0px 4px 15px 0px rgba(0,0,0,0.15);
+    -webkit-box-shadow: 0 5px 11px 0 rgba(0,0,0,.18),0 4px 15px 0 rgba(0,0,0,.15);
+    border-radius: 15px;
 }
 .close-upload, .close-add, .close-update{
     position: fixed;
-    top: 5px;
-    right: 5px;
-    color: red;
+    top: 8px;
+    right: 8px;
+    color: #ff2c37;
     border-radius: 100%;
     font-size:  30px;
     cursor: pointer;

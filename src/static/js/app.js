@@ -9,15 +9,32 @@ $(document).ready(function(){
             $('#diagram-img').attr('src', imagePath)
         }
     });
-    // //Retrieve content
+
+
+
+    // Retrieve popover buttons with their contents, positions and sizes
     $.ajax({
         type: 'GET',
-        url: "/get-contents",
+        url: "/get-popover-buttons",
         sync: 'synchronous',
         success: function(response){
+            // Response format
+            // [
+            //     0: [
+            //         0: "id" (string)
+            //         1: "content"(string)
+            //         2: left (real)
+            //         3: top( real)
+            //         4: width ( real )
+            //         5: height ( real )
+            //     ]
+            // ]
+            console.log('Response  to get buttons', response);
+            // Start a loop to get popover-btn details
             for ( var i = 0; i < response.length; i++){
+                // Create buttons and add to the UI
                 var id = response[i][0];
-                var title = id.replace(/-/g, " ");
+                var title = id.replace(/-/g, " "); //Replace dash ( - ) with space to format title
                 var content = response[i][1];
                 var htmlButton = `
                             <div id=${id} class="popover-btn p-l-1" data-container="body" data-toggle="popover" data-placement="right" data-html="true"
@@ -31,28 +48,60 @@ $(document).ready(function(){
                                                  <i class='far fa-trash-alt' style='color: red'></i>
                                              </div>"
                                 data-content= "${content}">
-                                <i class="fas fa-angle-double-down"></i>
+                                <i class="popover-icon fas fa-angle-double-down"></i>
                              </div>`;
+                  //Add button to the screen
                   $('.main-content').append(htmlButton);
-                  $(`#${id}`).popover()
+                  //Add pop-over effect to the created button
+                  $(`#${id}`).popover();
 
-                //When edit-content button on each popover is clicked, show up the contentUpdateForm
+                  //When edit-content button on each popover is clicked, show up the contentUpdateForm
                 $('body').on('click', `.popover > .popover-header >  .${id}`, function(){
                     //Since the id of the button was attached as the first class of the edit-button when the popover-btn was created, we get the id back as below
                     var id = this.classList[0];
                     //Use this id to get the  title and data-content of the popover-btn
-                    var originTitle = id.replace(/-/g, " ")
+                    var originTitle = id.replace(/-/g, " ");
                     var originContent = $(`#${id}`).attr('data-content');
                     //Popup the contentUpdateForm and load up the original details
                     displayEffect('#contentUpdateForm','block');
                     $('#contentUpdateForm-title').val(originTitle);
                     $('#newUpdateContent').html(originContent);
-
                     //Hide all popovers
                     $('.popover-btn').popover('hide');
-
+                    //Update content (when update button is clicked)
+                    $('#updateContentBtn ').click(function () {
+                        var newContentObj = {
+                            originId: id,
+                            newId:  $('#contentUpdateForm-title').val().replace(/ /g,"-"),
+                            newContent:  $('#newUpdateContent').html()
+                        };
+                        $.ajax({
+                            type: 'POST',
+                            url:  '/update-content',
+                            data:  JSON.stringify(newContentObj),
+                            async: 'asynchronous',
+                            success: function (response) {
+                                window.location.href = "/"
+                            }
+                        })
+                    })
                 });
+
+                //After the buttons is created, get their positions
+                var leftPosition = response[i][2];
+                var rightPosition = response[i][3];
+                $(`#${id}`).css('left', leftPosition);
+                $(`#${id}`).css('top', rightPosition);
+
+                //Get size
+                var width = response[i][4];
+                var height = response[i][5];
+                $(`#${id}`).css('width',  `${width}px`);
+                $(`#${id}`).css('height', `${height}px`);
             }
+            //End of getting popover-btn details loop
+
+            //Popover buttons' clicking effect
             $('.popover-btn').on('click', function(){
                 if ($(this).hasClass('active')){
                     $(this).removeClass('active');
@@ -65,17 +114,17 @@ $(document).ready(function(){
                     $(this).children().removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
                 }
             });
-
-
-
+            //End of retrieving contents and creating popover buttons
 
             //Add content mechanism
-            $('.addBtn').on('click', function (e) {
+            $('#addContentBtn').on('click', function (e){
+                console.log('what the heck?');
                 e.preventDefault();
                 if ( $('#contentForm-title').val() == "" || $('#newContent').text() == ""){
                     alert('Please fill out required field(s)')
                 }else {
-                    var id = $('#contentForm-title').val().replace(/ /g, "-"); //removeSpace
+                    var id = $('#contentForm-title').val().replace(/ /g, "-"); //replace space with dash (-)
+                    //Replace double quote with single quote to avoid format issue when constructing html element when generating button
                     var content = $('#newContent').html().replace(/"/g, " ' ");
                     var obj = {
                         id: id,
@@ -94,29 +143,14 @@ $(document).ready(function(){
                     })
                 }
             });
-            //After the buttons is created, get their positions
-            $.ajax({
-                type: 'GET',
-                url:"/get-positions",
-                sync: 'synchronous',
-                success: function(response){
-                    //Button types are array of array
-                    for (var i = 0; i < response.length; i++){
-                        var button = response[i];
-                        $(`#${button[0]}`).css('left', button[1]);
-                        $(`#${button[0]}`).css('top', button[2]);
-                    }
-                    console.log('button positions updated')
-                }
-            });
-
-
+            //End of adding content mechanism
         }
     });
-//End of retrieving content
+    // End of retrieving popover buttons with their contents, positions and sizes
 
 
-    //When the edit button is clicked,
+
+    //When the edit mode button is clicked,
     $('.mode-btn').click(  ()=>{
         if ($('.mode-btn').text()== 'Edit') {
             //Add class draggable for all children under class main-content
@@ -129,7 +163,6 @@ $(document).ready(function(){
             $('.mode-text').text('Edit mode');
             //Show tool buttons
             $('.tool-btns').css('display', 'block');
-
             //Make popover buttons  visible
             $('.popover-btn').css('opacity', '1');
             // Initialize and configure draggable function After every drag event: the id, positions[top,left] are written to btnPositions table
@@ -140,17 +173,43 @@ $(document).ready(function(){
                     btnObj['position'] = ui.position;
                     $.ajax({
                         type: 'POST',
-                        url: "/save-positions",
+                        url: "/update-position",
                         data: JSON.stringify(btnObj),
                         async: 'asynchronous',
                         success: function (response) {
-                            console.log('Position saved')
+                            console.log(response)
                         }
                     })
                 }
+            }).resizable({
+                animate: true,
+                animateDuration: "500",
+                animateEasing: "easeOutBounce",
+                ghost: true,
+                stop: function(event, ui){
+                    var id = this.id;
+                    //Wait for the animation to be finished before sending the size to database
+                    setTimeout(function(){
+                        var sizeObj = {};
+                        sizeObj['id'] = id;
+                        sizeObj['size'] = ui.size;
+                        console.log(sizeObj);
+                        $.ajax({
+                            type: 'POST',
+                            url: "/update-size",
+                            data: JSON.stringify(sizeObj),
+                            async: 'asynchronous',
+                            success: function (response) {
+                                console.log(response)
+                            }
+                        })
+                    }, 700);
+                }
             });
-            $('.draggable').draggable('enable'); //Enable draggable
-        //In display mode
+            $('.draggable').draggable('enable'); //Enable
+            $('.draggable').resizable('enable');
+
+            //In display mode
         } else if ($('.mode-btn').text()== 'Display'){
             $('.draggable').draggable('disable');
             //Make popover-body to be editable
@@ -167,11 +226,12 @@ $(document).ready(function(){
             $('.tool-btns').css('display', 'none');
             //Make popover buttons  invisible
             $('.popover-btn').css('opacity', '0');
-
-
         }
     });
     // End  of mode-btn clicking effect
+
+
+
 
     // Upload button effect
     $('.upload-btn-tool').on('click', function(){
