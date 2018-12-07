@@ -154,7 +154,11 @@ img.intLink { border: 0; }
 }
 .intLink { cursor: pointer; }
 img.intLink { border: 0; }
-/*#toolBar1 select { font-size:10px; }*/
+select {
+    margin-top: 20px;
+    width: 100px;
+    border-radius: 8px;
+}
 #newContent, #newUpdateContent {
     width: 500px;
     height: 200px;

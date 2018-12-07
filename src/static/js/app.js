@@ -249,6 +249,7 @@ $(document).ready(function(){
 
 
     //Popover-tool: Show and Hide Logic
+    //When showing the popover
     $('.main-content').on('shown.bs.popover', '.popover-btn', function (){
         // When in edit mode
         if ($('.mode-btn').text() == 'Display'){
@@ -259,8 +260,15 @@ $(document).ready(function(){
             //Hide popover-tools
             $('.popover-tool').css('display', 'none');
         }
+        $(this).addClass('active');
+        // Arrow change
+        $(this).children().removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
     });
-
+    $('.main-content').on('hidden.bs.popover', '.popover-btn', function () {
+        $(this).removeClass('active');
+        // Arrow change
+        $(this).children().removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
+    });
 
 
     // Upload button effect
@@ -425,19 +433,6 @@ $(document).ready(function(){
     //         `
     //     }
     // );
-
-    $('.popover-btn').on('click', function(){
-        if ($(this).hasClass('active')){
-            $(this).removeClass('active');
-            // Arrow change
-            $(this).children().removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
-        } else{
-            $(this).addClass('active')
-            $(this).addClass('');
-            // Arrow change
-            $(this).children().removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
-        }
-    });
 
 });
 
