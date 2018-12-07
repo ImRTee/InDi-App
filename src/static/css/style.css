@@ -85,6 +85,7 @@ table td, table th{
     position: relative;
 }
 .popover-tool{
+    display: none;
     position: absolute;
     top: 5px;
     right: 5px;

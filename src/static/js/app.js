@@ -103,7 +103,7 @@ $(document).ready(function(){
                     }
                 });
 
-                    //After the buttons is created, get their positions
+                //After the buttons is created, get their positions
                 var leftPosition = response[i][2];
                 var rightPosition = response[i][3];
                 $(`#${id}`).css('left', leftPosition);
@@ -166,6 +166,7 @@ $(document).ready(function(){
 
     //When the edit mode button is clicked,
     $('.mode-btn').click(  ()=>{
+        //If in 'Edit' mode
         if ($('.mode-btn').text()== 'Edit') {
             //Add class draggable for all children under class main-content
             $('.main-content > div').addClass('draggable');
@@ -179,6 +180,7 @@ $(document).ready(function(){
             $('.tool-btns').css('display', 'block');
             //Make popover buttons  visible
             $('.popover-btn').css('opacity', '1');
+
             // Initialize and configure draggable function After every drag event: the id, positions[top,left] are written to btnPositions table
             $('.draggable').draggable({
                 stop: function (event, ui) {
@@ -223,7 +225,7 @@ $(document).ready(function(){
             $('.draggable').draggable('enable'); //Enable
             $('.draggable').resizable('enable');
 
-            //In display mode
+            //Switch to 'Display' mode
         } else if ($('.mode-btn').text()== 'Display'){
             $('.draggable').draggable('disable');
             //Make popover-body to be editable
@@ -240,10 +242,24 @@ $(document).ready(function(){
             $('.tool-btns').css('display', 'none');
             //Make popover buttons  invisible
             $('.popover-btn').css('opacity', '0');
+
         }
     });
     // End  of mode-btn clicking effect
 
+
+    //Popover-tool: Show and Hide Logic
+    $('.main-content').on('shown.bs.popover', '.popover-btn', function (){
+        // When in edit mode
+        if ($('.mode-btn').text() == 'Display'){
+            //Show popover-tools
+            $('.popover-tool').css('display', 'block');
+         //When in display mode
+        }else{
+            //Hide popover-tools
+            $('.popover-tool').css('display', 'none');
+        }
+    });
 
 
 
