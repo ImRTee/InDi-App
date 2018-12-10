@@ -53,7 +53,7 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
 
-@app.route('/update-position', methods=['POST'])
+@app.route('/updateContent-position', methods=['POST'])
 def updatePosition():
     data = request.get_json('obj')
     id = data['id']
@@ -62,7 +62,7 @@ def updatePosition():
     db.updatePos(id, left, top)
     return 'Position successfully updated'
 
-@app.route('/update-size', methods=['POST'])
+@app.route('/updateContent-size', methods=['POST'])
 def updateSize():
     data = request.get_json('sizeObj')
     print(data)
@@ -73,15 +73,19 @@ def updateSize():
     return 'Size successfully updated'
 
 
-@app.route('/save-content', methods=['POST'])
-def saveContent():
+@app.route('/add-button', methods=['POST'])
+def addButton():
     data = request.get_json('obj')
     id = data['id']
     content = data['content']
-    db.insertContent(id, content)
+    left = data['left']
+    top = data['top']
+    width = data['width']
+    height = data['height']
+    db.insertButton(id, content, left, top, width, height)
     return ''
 
-@app.route('/update-content', methods=['POST'])
+@app.route('/updateContent-content', methods=['POST'])
 def updateContent():
     data = request.get_json('newContentObj')
     originId = data['originId']

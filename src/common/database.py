@@ -16,24 +16,11 @@ class Database():
             self.insertDefaultImagePath()
 
 
-    # def getPositions(self):
-    #     conn = sqlite3.connect(self.mainDataBasePath)
-    #     c = conn.cursor()
-    #     result = c.execute("SELECT * from PopoverBtn ")
-    #     resultList = result.fetchall()
-    #     return jsonify(resultList)
 
-    # def insertPos(self, id,  left, top):
-    #     conn = sqlite3.connect(self.mainDataBasePath)
-    #     c = conn.cursor()
-    #     c.execute("INSERT INTO PopoverBtn VALUES (?,?, ?,?)", (id, left, top))
-    #     conn.commit()
-    #     conn.close()
-
-    def insertContent(self, id, content):
+    def insertButton(self, id, content, left, top, width, height):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
-        c.execute("INSERT INTO PopoverBtn  VALUES (?,?,?,?,?,?)", (id, content, 100, 0, 40, 40))
+        c.execute("INSERT INTO PopoverBtn  VALUES (?,?,?,?,?,?)", (id, content, left, top, width, height))
         conn.commit()
         conn.close()
 
@@ -78,12 +65,11 @@ class Database():
         conn.commit()
         conn.close()
 
-
     def createPopoverBtnTable(self):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         c.execute("""CREATE TABLE PopoverBtn (
-                    id text,
+                    id text NOT NULL UNIQUE, 
                     content text ,
                     left real,
                     top real,
