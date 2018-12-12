@@ -1,120 +1,95 @@
 $(document).ready(function(){
-    //Retrieve  image url
+    var pages = [];
+    var currentPage;
     $.ajax({
         type: 'GET',
-        url: "/get-image",
+        url: "/get-pageTable",
         async: 'asynchronous',
-        success: function(response){
-            var imagePath = response[0][0];
-            $('#diagram-img').attr('src', imagePath)
-        }
-    });
-
-    // Retrieve popover buttons with their contents, positions and sizes
-    $.ajax({
-        type: 'GET',
-        url: "/get-popover-buttons",
-        sync: 'synchronous',
-        success: function(response){
-            // Response format
+        success: function(response) {
             // [
-            //     0: [
-            //         0: "id" (string)
-            //         1: "content"(string)
-            //         2: left (real)
-            //         3: top( real)
-            //         4: width ( real )
-            //         5: height ( real )
+            //     [
+            //         pageId, projectName, teamName, imagePath
             //     ]
             // ]
-            // Start a loop to get popover-btn details
-            for ( var i = 0; i < response.length; i++){
-                //Provision attributes
-                var id = response[i][0];
-                var content = response[i][1];
-                var leftPosition = response[i][2];
-                var topPosition = response[i][3];
-                var width = response[i][4];
-                var height = response[i][5];
-
-                // Create buttons and add to the UI
-                var popoverBtn = new PopoverBtn(id, content, leftPosition, topPosition, width, height);
-                popoverBtn.retrieve();
-
-                  //When edit-content button on each popover is clicked, show up the contentUpdateForm
-                $('body').on('click', `.popover > .popover-header >  .${id}.popover-edit`, function(){
-                    //Since the id of the button was attached as the first class of the edit-button when the popover-btn was created, we get the id back as below
-                    var id = this.classList[0];
-                    //Use this id to get the  title and data-content of the popover-btn
-                    var originTitle = id.replace(/-/g, " ");
-                    var originContent = $(`#${id}`).attr('data-content');
-                    //Popup the contentUpdateForm and load up the original details
-                    displayEffect('#contentUpdateForm','block');
-                    $('#contentUpdateForm-title').val(originTitle);
-                    $('#newUpdateContent').html(originContent);
-                    //Hide all popovers
-                    $('.popover-btn').popover('hide');
-
-                    //Update content (when updateContent button is clicked)
-                    $('#updateContentBtn ').click(function () {
-                        var newId = $('#contentUpdateForm-title').val().replace(/ /g,"-");
-                        var newContent = $('#newUpdateContent').html();
-                        popoverBtn.updateContent(newId, newContent);
-                    })
-                });
-
-                //When the popover-delete button is clicked:
-                $('body').on('click', `.popover > .popover-header >  .${id}.popover-delete`, function() {
-                    if(confirm('Are you sure you want to delete this popover button?')){
-                        //Since the id of the button was attached as the first class of the edit-button when the popover-btn was created, we get the id back as below
-                        var id = this.classList[0];
-                        popoverBtn.delete(id);
-                    }
-                });
+            pages = response;
+            //If there is no page
+            if (pages.length == 0) {
+                var teamName = prompt('Welcome to InDi App, may I ask your team name please?');
+                var projectName = prompt("Great! What is the name of the project/application you want to use me to document? ");
+                var pageId = prompt("Thank you! Let's create the first page for you. What do you want to name it? ").replace(/ /g, '-');
+                var confluenceLink = prompt("What is the confluence link you want to attach to this page?");
+                var imagePath = 'empty';
+                var page = new Page(pageId, projectName, teamName, confluenceLink, imagePath);
+                // console.log("Created page object", page);
+                page.addToDatabase();
+                pages.push(page);
+            } else {
+                var currentPageId = pages[0][0];
+                var currentPagePN= pages[0][1];
+                var currentPageTN= pages[0][2];
+                var currentPageCL = pages[0][3];
+                var currentPageIP= pages[0][4];
+                currentPage = new Page(currentPageId, currentPagePN, currentPageTN, currentPageCL, currentPageIP);
+                currentPage.getImage();
+                currentPage.retrieveButtons();
             }
-            //End of getting popover-btn details loop
-
-            //Popover buttons' clicking effect
-            $('.popover-btn').on('click', function(){
-                if ($(this).hasClass('active')){
-                    $(this).removeClass('active');
-                    // Arrow change
-                    $(this).children().removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
-                } else{
-                    $(this).addClass('active');
-                    $(this).addClass('');
-                    // Arrow change
-                    $(this).children().removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
-                }
-            });
-            //End of retrieving contents and creating popover buttons
-
-            //Add button mechanism
-            $('#addContentBtn').on('click', function (e){
-                e.preventDefault();
-                if ( $('#contentForm-title').val() == "" || $('#newContent').text() == ""){
-                    alert('Please fill out required field(s)')
-                }else {
-                    var id = $('#contentForm-title').val().replace(/ /g, "-"); //replace space with dash (-)
-                    //Replace double quote with single quote to avoid format issue when constructing html element when generating button
-                    var content = $('#newContent').html().replace(/"/g, " ' ");
-                    var newPopoverBtn = new PopoverBtn(id, content, 0, 0, 40, 40);
-                    newPopoverBtn.addToDatabase();
-                }
-            });
-            //End of adding content mechanism
         }
     });
-    // End of retrieving popover buttons with their contents, positions and sizes
 
+    //When edit-content button on each popover is clicked, show up the contentUpdateForm
+    $('body').on('click', `.popover > .popover-header >  .popover-edit`, function() {
+        //Since the id of the button was attached as the first class of the edit-button when the popover-btn was created, we get the id back as
+        const btnId = $(this).attr('class').split(/\s+/)[0];
+        //Use this id to get the  title and data-content of the popover-btn
+        var originTitle = btnId.replace(/-/g, " ");
+        var originContent = $(`#${btnId}`).attr('data-content');
+        //Popup the contentUpdateForm and load up the original details
+        $('#contentUpdateForm-oldBtnId').val(btnId);
+        $('#contentUpdateForm').css('display', 'block');
+        $('#contentUpdateForm-title').val(originTitle);
+        $('#newUpdateContent').html(originContent);
+        //Hide all popovers
+        $('.popover-btn').popover('hide');
 
+        //Update content (when updateContent button is clicked)
+        $('body').on('click', '#updateContentBtn', (e) => {
+            console.log('what what')
+            e.preventDefault();
+            var originId =$('#contentUpdateForm-oldBtnId').val()  ;
+            var newId = $('#contentUpdateForm-title').val().replace(/ /g,"-");
+            var newContent = $('#newUpdateContent').html();
 
+            currentPage.updateBtnContent(originId, newId, newContent);
+        })
+    });
+
+    //When the popover-delete button is clicked:
+    $('body').on('click', `.popover > .popover-header >  .popover-delete`, function () {
+        const btnId = $(this).attr('class').split(/\s+/)[0];
+        if(confirm('Are you sure you want to delete this popover button?')){
+            currentPage.deleteBtn(btnId);
+        }
+    });
+
+    //intercept upload-form submission to overwrite the action to include pageId in the request
+    //This let the backend know which page this picture belongs to
+    $('#upload-form').submit(function(){
+        var currentPageId = currentPage.getPageId() ;
+        this.action = `/upload?pageId=${currentPageId}`;
+        this.method = 'post'
+    });
+
+    //Add button mechanism
+    $('#addContentBtn').on('click', function (e){
+        e.preventDefault();
+        currentPage.addButton();
+    });
+    //End of adding buttons mechanism
     //When the edit mode button is clicked,
     $('.mode-btn').click(  ()=>{
         //If in 'Edit' mode
         if ($('.mode-btn').text()== 'Edit') {
-            //Add class draggable for all children under class main-content
-            $('.main-content > div').addClass('draggable');
+            // $('.main-content > div').addClass('draggable');
             //Change mode button to display mode
             $('.mode-btn').text('Display');
             //Change mode's button color
@@ -124,49 +99,8 @@ $(document).ready(function(){
             //Show tool buttons
             $('.tool-btns').css('display', 'block');
             //Make popover buttons  visible
-            $('.popover-btn').css('opacity', '1');
-
-            // Initialize and configure draggable function After every drag event: the id, positions[top,left] are written to btnPositions table
-            $('.draggable').draggable({
-                stop: function (event, ui) {
-                    var btnObj = {};
-                    btnObj['id'] = this.id;
-                    btnObj['position'] = ui.position;
-                    $.ajax({
-                        type: 'POST',
-                        url: "/updateContent-position",
-                        data: JSON.stringify(btnObj),
-                        async: 'asynchronous',
-                        success: function (response) {
-                            console.log(response)
-                        }
-                    })
-                }
-            }).resizable({
-                animate: true,
-                animateDuration: "500",
-                animateEasing: "easeOutBounce",
-                ghost: true,
-                stop: function(event, ui){
-                    var id = this.id;
-                    //Wait for the animation to be finished before sending the size to database
-                    setTimeout(function(){
-                        var sizeObj = {};
-                        sizeObj['id'] = id;
-                        sizeObj['size'] = ui.size;
-                        console.log(sizeObj);
-                        $.ajax({
-                            type: 'POST',
-                            url: "/updateContent-size",
-                            data: JSON.stringify(sizeObj),
-                            async: 'asynchronous',
-                            success: function (response) {
-                                console.log(response)
-                            }
-                        })
-                    }, 700);
-                }
-            });
+            $('.popover-btn').css('opacity', '0.5');
+            currentPage.draggableInitialize();
             $('.draggable').draggable('enable'); //Enable
             $('.draggable').resizable('enable');
 
@@ -187,10 +121,24 @@ $(document).ready(function(){
             $('.tool-btns').css('display', 'none');
             //Make popover buttons  invisible
             $('.popover-btn').css('opacity', '0');
-
         }
     });
     // End  of mode-btn clicking effect
+
+    //Popover buttons' clicking effect
+    $('.popover-btn').on('click', function(){
+        if ($(this).hasClass('active')){
+            $(this).removeClass('active');
+            // Arrow change
+            $(this).children().removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
+        } else{
+            $(this).addClass('active');
+            $(this).addClass('');
+            // Arrow change
+            $(this).children().removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
+        }
+    });
+
 
 
     //Popover-tool: Show and Hide Logic
@@ -226,7 +174,8 @@ $(document).ready(function(){
     });
 
     $('.add-btn-tool').on('click', function(){
-        displayEffect('#contentForm', 'block')
+        displayEffect('#contentForm', 'block');
+        $('.popover-btn').popover('hide');
     });
 
     $('.close-add').on('click', function () {

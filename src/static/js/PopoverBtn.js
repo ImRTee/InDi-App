@@ -1,63 +1,31 @@
 class PopoverBtn {
-    constructor(btnId,  content, left, top, width, height) {
+    constructor(btnId,  content, left, top, width, height, pageId) {
         this.btnId =  btnId;
         this.content = content;
         this.left = left;
         this.top = top;
         this.width = width;
         this.height = height;
+        this.pageId = pageId;
     }
-
-    retrieve(){
-        var id = this.btnId;
-        var content = this.content;
-        var title = id.replace(/-/g, " "); //Replace dash ( - ) with space to format title
-        var htmlButton = `
-                            <div id=${id} class="popover-btn p-l-1" data-container="body" data-toggle="popover" data-placement="right" data-html="true"
-                                title="<div class='pop-up-title text-center' >
-                                                <h4><strong>${title}</strong></h4>
-                                           </div>
-                                           <div  class='${id} popover-edit popover-tool' style='margin-right: 15px'>
-                                                <i class=' far fa-edit '></i>
-                                            </div>
-                                             <div class='${id} popover-delete popover-tool'>
-                                                 <i class='far fa-trash-alt' style='color: red'></i>
-                                             </div>"
-                                data-content= "${content}">
-                                <i class="popover-icon fas fa-angle-double-down"></i>
-                             </div>`;
-        //Add button to the screen
-        $('.main-content').append(htmlButton);
-        //Add pop-over effect to the created button
-        $(`#${id}`).popover();
-        //After the buttons is created, get their positions
-        this.retrievePosition();
-        //Get size
-        this.retriveSize();
+    getBtnId(){
+        var copyBtnId = this.btnId;
+        return copyBtnId
     }
-
-    addToDatabase(i){
-        var obj = {
-            id: this.btnId,
-            content: this.content,
-            left: this.left,
-            top: this.top,
-            width: this.width,
-            height: this.height
-        };
+    deleteBtn (id){
         $.ajax({
             type: 'POST',
-            url: "/add-button",
-            data: JSON.stringify(obj),
-            async: 'asynchronous',
+            url: '/delete-button',
+            data: JSON.stringify(id),
             success: function (response) {
-                alert('New button has been added');
-                window.location.href = "/"
+                // window.location.href = "/"
+                $('.popover-btn').popover('hide');
+                $(`#${id}`).remove();
             }
         })
-    }
+    };
 
-    updateContent(newId, newContent){
+    updateContent(newId, newContent, pageId){
         var newContentObj = {
             originId:  this.btnId,
             newId: newId,
@@ -69,31 +37,50 @@ class PopoverBtn {
             data:  JSON.stringify(newContentObj),
             async: 'asynchronous',
             success: function (response) {
-                window.location.href = "/"
+                console.log('Button updated in the database');
+                $('#contentUpdateForm').css('display', 'none')
+                $('#contentUpdateForm-title').val('');
+                $('#newUpdateContent').text('');
+                $("body").off('click', '#updateContentBtn')
             }
-        })
+        });
+        return  new PopoverBtn(newId, newContent, this.left, this.top, this.width, this.height, pageId)
     }
-    delete (id){
+
+    updatePos(newLeft, newTop){
+        this.left = newLeft;
+        this.top = newTop
+    }
+    updateSize(newWidth, newHeight){
+        this.width = newWidth;
+        this.height = newHeight;
+    }
+
+
+    addToDatabase (){
+        var obj = {
+            id: this.btnId,
+            content: this.content,
+            left: this.left,
+            top: this.top,
+            width: this.width,
+            height: this.height,
+            pageId: this.pageId
+        };
         $.ajax({
             type: 'POST',
-            url: '/delete-button',
-            data: JSON.stringify(id),
+            url: "/add-button",
+            data: JSON.stringify(obj),
+            async: 'asynchronous',
             success: function (response) {
-                window.location.href = "/"
+                alert('New button has been added');
+                $('#contentForm').css('display','none');
+                $('#contentForm-title').val('');
+                $('#newContent').text('');
+                $("body").off('click', '#addContentBtn');
+                // window.location.href = "/"
             }
         })
-    }
-
-
-
-
-    retrievePosition(){
-        $(`#${this.btnId}`).css('left', this.left);
-        $(`#${this.btnId}`).css('top', this.top);
-    }
-    retriveSize(){
-        $(`#${this.btnId}`).css('width',  `${this.width}px`);
-        $(`#${this.btnId}`).css('height', `${this.height}px`);
     }
 
 

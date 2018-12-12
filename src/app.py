@@ -23,9 +23,33 @@ db = Database()
 def home():
     return  render_template('index.html')
 
+@app.route('/get-pageTable', methods=['GET'])
+def getPageTable():
+    conn = sqlite3.connect(db.mainDataBasePath)
+    c = conn.cursor()
+    c.execute("""SELECT  *  
+                            from Page 
+                            """)
+    result = c.fetchall()
+    return jsonify(result)
+
+@app.route('/add-page', methods=['POST'])
+def addPage():
+    data = request.get_json('pageObj')
+    pageId = data['pageId']
+    projectName = data['projectName']
+    teamName = data['teamName']
+    confluenceLink = data['confluenceLink']
+    imagePath = data['imagePath']
+    db.insertPage(pageId, projectName, teamName, confluenceLink, imagePath)
+    return 'Page successfully added'
+
+
+
 # Source: https://stackoverflow.com/questions/44926465/upload-image-in-flask
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    pageId = request.args.get('pageId');
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -44,7 +68,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             # Update image path in the database
-            db.updateImgPath('../static/images/' + filename)
+            db.updateImgPath('../static/images/' + filename, pageId)
             return  redirect('/')
     return  ''
 
@@ -75,15 +99,16 @@ def updateSize():
 
 @app.route('/add-button', methods=['POST'])
 def addButton():
-    data = request.get_json('obj')
-    id = data['id']
-    content = data['content']
-    left = data['left']
-    top = data['top']
-    width = data['width']
-    height = data['height']
-    db.insertButton(id, content, left, top, width, height)
-    return ''
+    btnObj = request.get_json('btnObj')
+    btnId = btnObj['id']
+    content = btnObj['content']
+    left = btnObj['left']
+    top = btnObj['top']
+    width = btnObj['width']
+    height = btnObj['height']
+    pageId = btnObj['pageId']
+    db.insertButton(btnId, content, left, top, width, height, pageId)
+    return 'Button added to the database'
 
 @app.route('/updateContent-content', methods=['POST'])
 def updateContent():
@@ -105,9 +130,10 @@ def updateContent():
 
 @app.route('/get-image')
 def getImagePath():
+    pageId = request.args.get('pageId')
     conn = sqlite3.connect(db.mainDataBasePath)
     c = conn.cursor()
-    c.execute("SELECT  content  from PopoverBtn WHERE id='image'")
+    c.execute("SELECT  imagePath  from Page WHERE pageId= ? ", (pageId, ))
     result = c.fetchall()
     return jsonify(result)
 
@@ -115,7 +141,7 @@ def getImagePath():
 def getContents():
     conn = sqlite3.connect(db.mainDataBasePath)
     c = conn.cursor()
-    c.execute("SELECT  *  from PopoverBtn WHERE id NOT IN ('image')") #Get all content not image
+    c.execute("SELECT  *  from PopoverBtn WHERE btnId NOT IN ('image')") #Get all content not image
     result = c.fetchall()
     return jsonify(result)
 

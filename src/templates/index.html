@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <div  class="main-content">
+        <div  class="main-content" id="main">
                  <img id="diagram-img" src="../static/images/Architecture.jpg" width="950px">
                 <!--<div id="btn-github" class="github popover-btn p-l-1" data-container="body" data-toggle="popover" data-placement="right" data-html="true"><i class="fas fa-angle-double-down"></i></div>-->
                 <!--<div id="btn-jenkins" class="jenkins popover-btn" data-container="body" data-toggle="popover" data-placement="right" data-html="true"><i class="fas fa-angle-double-down"></i></div>-->
@@ -54,7 +54,7 @@
     <!--Upload form-->
     <div class="upload-form-container p-3 box-shadow">
         <i class="close-upload fas fa-window-close"></i>
-        <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data" >
+        <form id="upload-form" enctype="multipart/form-data" >
             <h3 class="text-center fa-bold"> Upload Your Diagram</h3>
             <div class="upload-content d-flex">
                 <span class="btn btn-default btn-file w-75">
@@ -142,10 +142,11 @@
     </form>
 
     <!--Update-content form-->
-    <form name="contentUpdateForm"  id="contentUpdateForm" class=" text-center border border-light p-5 mx-auto box-shadow" onsubmit="return false;">
+    <form name="contentUpdateForm"  id="contentUpdateForm" class=" text-center border border-light p-5 mx-auto box-shadow" onsubmit="ret">
         <i class="close-update fas fa-window-close"></i>
         <h1 > Content Update Form</h1>
         <input id="contentUpdateForm-title" name="title" placeholder="title" class="form-control" >
+        <input id="contentUpdateForm-oldBtnId" type="hidden" >
         <!--<input type="hidden" name="myDoc">-->
         <div id="contentUpdateForm-toolBar1">
             <select onchange="formatDoc('formatblock',this[this.selectedIndex].value);this.selectedIndex=0;">
@@ -214,7 +215,7 @@
         </div>
         <div id="newUpdateContent" contenteditable="true" class="text-left mx-auto form-control"></div>
         <p id="contentUpdateForm-editMode"><input type="checkbox" name="switchMode" id="contentUpdateForm-switchBox" onchange="setUpdateDocMode(this.checked);" /> <label for="contentUpdateForm-switchBox">Show HTML</label></p>
-        <button id="updateContentBtn" class="btn btn-block btn-primary">Update</button>
+        <button type="submit" id="updateContentBtn" class="btn btn-block btn-primary">Update</button>
     </form>
 
 
@@ -229,6 +230,7 @@
         <script src="{{url_for('static', filename='js/text-editor.js')}}"></script>
 
         <script src="{{url_for('static', filename='js/PopoverBtn.js')}}"></script>
+        <script src="{{url_for('static', filename='js/Page.js')}}"></script>
         <script src="{{url_for('static', filename='js/app.js')}}"></script>
 
     </body>
