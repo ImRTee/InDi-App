@@ -43,7 +43,7 @@ $(document).ready(function(){
                     //set up navigation bar
                     var navItemHTML = `
                         <li class="${i} nav-item">
-                            <a   class=" nav-link" >${currentPageId.replace(/-/g, " ")}<span class="sr-only">(current)</span></a>
+                            <a   class=" nav-link" style="font-weight: bold">${currentPageId.replace(/-/g, " ")}<span class="sr-only">(current)</span></a>
                         </li>
                     `;
                     $('#nav-list').append(navItemHTML);
@@ -55,19 +55,18 @@ $(document).ready(function(){
         }
     });
 
-    //When nav-item is click
+    //Switch page mechanism
     $('#nav-list').on('click', '.nav-item', function(){
         //Clear the DOM
-        $("#main").load(location.href+" #main>*","");
-        //hide all popover
         $('.popover-btn').popover('hide');
+        //Hide all popover
         var index = Number($(this).attr('class')[0]);
         pageService.setUpPage(index);
         currentPage = pageService.getCurrentPage();
-
     });
     
     $('#addPage-tool-btn').click(function () {
+        $('.popover-btn').popover('hide');
         $("#addPageForm-container").css('display', 'block')
     });
     //Adding page mechanism
@@ -75,8 +74,12 @@ $(document).ready(function(){
         e.preventDefault();
         var newPageId = $('#newPage-title').val().replace(/ /g, '-');
         var newPagePN = $('#newPage-projectName').val();
-        var newPage = new Page(newPageId, newPagePN, currentPage.getTeamName(), currentPage.getConfluenceLink(), pageService.getDefaultImagePath());
-        pageService.addPageToDatabase(newPage)
+        if ( newPageId ==""|| newPageId == " " && newPagePN =="" || newPagePN == " " ){
+            alert('Please fill out all fields')
+        }else {
+            var newPage = new Page(newPageId, newPagePN, currentPage.getTeamName(), currentPage.getConfluenceLink(), pageService.getDefaultImagePath());
+            pageService.addPageToDatabase(newPage)
+        }
     });
 
 
@@ -89,15 +92,13 @@ $(document).ready(function(){
         var originContent = $(`#${btnId}`).attr('data-content');
         //Popup the contentUpdateForm and load up the original details
         $('#contentUpdateForm-oldBtnId').val(btnId);
-        $('#contentUpdateForm').css('display', 'block');
+        // $('#contentUpdateForm').css('display', 'block');
         $('#contentUpdateForm-title').val(originTitle);
         $('#newUpdateContent').html(originContent);
         //Hide all popovers
         $('.popover-btn').popover('hide');
-
         //Update content (when updateContent button is clicked)
         $('body').on('click', '#updateContentBtn', (e) => {
-            console.log('what what')
             e.preventDefault();
             var originId =$('#contentUpdateForm-oldBtnId').val()  ;
             var newId = $('#contentUpdateForm-title').val().replace(/ /g,"-");
@@ -130,14 +131,14 @@ $(document).ready(function(){
     });
     //End of adding buttons mechanism
     //When the edit mode button is clicked,
-    $('.mode-btn').click(  ()=>{
+    $('#mode-btn').click(  ()=>{
         //If in 'Edit' mode
-        if ($('.mode-btn').text()== 'Edit') {
+        if ($('#mode-btn').text()== 'Edit') {
             // $('.main-content > div').addClass('draggable');
             //Change mode button to display mode
-            $('.mode-btn').text('Display');
+            $('#mode-btn').text('Display');
             //Change mode's button color
-            $('.mode-btn').removeClass('btn-success').addClass('btn-primary') ;
+            $('#mode-btn').removeClass('btn-success').addClass('btn-primary') ;
             //Change mode text to 'Edit mode'
             $('.mode-text').text('Edit mode');
             //Show tool buttons
@@ -149,14 +150,14 @@ $(document).ready(function(){
             $('.draggable').resizable('enable');
 
             //Switch to 'Display' mode
-        } else if ($('.mode-btn').text()== 'Display'){
+        } else if ($('#mode-btn').text()== 'Display'){
             $('.draggable').draggable('disable');
             //Make popover-body to be editable
             $('.popover-body').attr('contentEditable', 'false');
             //Change mode button's text to 'Edit'
-            $('.mode-btn').text('Edit');
+            $('#mode-btn').text('Edit');
             //Change mode button's color
-            $('.mode-btn').removeClass('btn-primary').addClass('btn-success');
+            $('#mode-btn').removeClass('btn-primary').addClass('btn-success');
             //Update the mode status
             $('.mode-text').text('Display mode');
             //Hide all popovers
@@ -189,7 +190,7 @@ $(document).ready(function(){
     //When showing the popover
     $('.main-content').on('shown.bs.popover', '.popover-btn', function (){
         // When in edit mode
-        if ($('.mode-btn').text() == 'Display'){
+        if ($('#mode-btn').text() == 'Display'){
             //Show popover-tools
             $('.popover-tool').css('display', 'block');
          //When in display mode

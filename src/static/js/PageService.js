@@ -29,7 +29,7 @@ class  PageService {
             data: JSON.stringify(page),
             async: 'asynchronous',
             success: function (response) {
-                alert('New page has been added');
+                alert('A new page has been successfully added');
                 window.location.href = "/"
             }
         })
@@ -37,5 +37,4 @@ class  PageService {
     fillUpPageList(page){
         this.pages.push(page)
     }
-
 }

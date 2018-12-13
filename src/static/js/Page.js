@@ -56,6 +56,8 @@ class Page{
         }
     }
     retrieveButtons(){
+        //Make sure the list is empty before retrieving buttons into
+        this.popoverBtns = [];
         // Retrieve popover buttons with their contents, positions and sizes
         $.ajax({
             type: 'POST',
@@ -130,7 +132,7 @@ class Page{
                                 title="<div class='pop-up-title text-center' >
                                                 <h4><strong>${title}</strong></h4>
                                            </div>
-                                           <div  class='${btnId} popover-edit popover-tool' style='margin-right: 15px'>
+                                           <div  class='${btnId} popover-edit popover-tool' style='margin-right: 15px' data-toggle='modal' data-target='#updateContentModal'>
                                                 <i class=' far fa-edit '></i>
                                             </div>
                                              <div class='${btnId} popover-delete popover-tool'>
@@ -149,7 +151,12 @@ class Page{
             //Get size
             $(`#${btnId}`).css('width',  `${width}px`);
             $(`#${btnId}`).css('height', `${height}px`);
-
+        }
+        //If in edit mode, show buttons
+        if ($('#mode-btn').text() == 'Display'){
+            console.log('what?')
+            $('.popover-btn').css('opacity', '0.5');
+            this.draggableInitialize();
         }
     }
 

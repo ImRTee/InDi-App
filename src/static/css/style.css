@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Architects+Daughter');
 body{
     width: 100vw;
     position: relative;
@@ -17,7 +18,7 @@ body{
     top: 10px;
     right: 40px;
 }
-.mode-btn{
+#mode-btn{
     position: absolute;
     right: 30px;
     top: 30px;
@@ -98,36 +99,18 @@ table td, table th{
     cursor: pointer;
 }
 
-/*Upload Form Style*/
-.upload-form-container{
-    background: white;
-    display: none;
-    position: absolute;
-    top: 20%;
-    left: 50%;
-}
-
-/*Add Page Form Style*/
-#addPageForm-container{
-    background: white;
-    display: none;
-    position: absolute;
-    top: 20%;
-    left: 50%;
-}
-#addPageForm-container > .card-header, #addPage-btn{
-    background-color: #3f51b5 !important;
-    color: white;
-}
-
 
 .box-shadow{
-    -webkit-transform: translate(-50%, -20%);
-    -moz-transform: translate(-50%, -20%);
-    transform: translate(-50%, -20%);
     box-shadow:  0px 5px 11px 0px rgba(0,0,0,0.18), 0px 4px 15px 0px rgba(0,0,0,0.15);
     -webkit-box-shadow: 0 5px 11px 0 rgba(0,0,0,.18),0 4px 15px 0 rgba(0,0,0,.15);
     border-radius: 15px;
+}
+.snackbar-style{
+    text-align:center;
+    font-size: 16px;
+    padding:  15px;
+    box-shadow:  0px 5px 11px 0px rgba(0,0,0,0.18), 0px 4px 15px 0px rgba(0,0,0,0.15);
+    -webkit-box-shadow: 0 5px 11px 0 rgba(0,0,0,.18),0 4px 15px 0 rgba(0,0,0,.15);
 }
 .close-upload, .close-add, .close-update{
     position: fixed;
@@ -145,33 +128,32 @@ table td, table th{
 .intLink { cursor: pointer; }
 img.intLink { border: 0; }
 #toolBar1 select { font-size:10px; }
-#newContent {
-    width: 540px;
+#newContent, #newUpdateContent {
     height: 200px;
     border: 1px #000000 solid;
     padding: 12px;
-    overflow: scroll;
+    overflow: auto;
 }
-#newContent #sourceText {
-    padding: 0;
-    margin: 0;
-    min-width: 498px;
-    min-height: 200px;
-}
+/*#newContent #sourceText {*/
+    /*padding: 0;*/
+    /*margin: 0;*/
+    /*min-width: 498px;*/
+    /*min-height: 200px;*/
+/*}*/
 #editMode label { cursor: pointer; }
 
-/*contentForm*/
-#contentForm{
-    display: none;
-    position: absolute;
-    width: 600px;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%,-30%);
-    background-color: white;
-    z-index: 2000;
 
-}
+/*contentForm*/
+/*#contentForm{*/
+    /*display: none;*/
+    /*position: absolute;*/
+    /*width: 600px;*/
+    /*top: 30%;*/
+    /*left: 50%;*/
+    /*transform: translate(-50%,-30%);*/
+    /*background-color: white;*/
+    /*z-index: 2000;*/
+/*}*/
 .intLink { cursor: pointer; }
 img.intLink { border: 0; }
 select {
@@ -179,32 +161,25 @@ select {
     width: 100px;
     border-radius: 8px;
 }
-#newContent, #newUpdateContent {
-    width: 500px;
-    height: 200px;
-    border: 1px #000000 solid;
-    padding: 12px;
-    overflow: scroll;
-}
 
-#newContent#sourceText, #contentUpdateForm#sourceText {
-    padding: 0;
-    margin: 0;
-    min-width: 498px;
-    min-height: 200px;
-}
+/*#contentUpdateForm#sourceText {*/
+    /*padding: 0;*/
+    /*margin: 0;*/
+    /*min-width: 498px;*/
+    /*min-height: 200px;*/
+/*}*/
 #editMode label { cursor: pointer; }
 
 /*contentUpdateForm*/
-#contentUpdateForm{
-    display:  none;
-    position:  absolute;
-    top: 20%;
-    left:  50%;
-    transform: translate(-50%, -20%);
-    background-color: white;
-    z-index: 2000;
-}
+/*#contentUpdateForm{*/
+    /*display:  none;*/
+    /*position:  absolute;*/
+    /*top: 20%;*/
+    /*left:  50%;*/
+    /*transform: translate(-50%, -20%);*/
+    /*background-color: white;*/
+    /*z-index: 2000;*/
+/*}*/
 
 
 

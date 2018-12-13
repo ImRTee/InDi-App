@@ -37,8 +37,7 @@ class PopoverBtn {
             data:  JSON.stringify(newContentObj),
             async: 'asynchronous',
             success: function (response) {
-                console.log('Button updated in the database');
-                $('#contentUpdateForm').css('display', 'none')
+                $.snackbar({content: "Button was updated successfully", style:"snackbar-style"});
                 $('#contentUpdateForm-title').val('');
                 $('#newUpdateContent').text('');
                 $("body").off('click', '#updateContentBtn')
@@ -73,7 +72,7 @@ class PopoverBtn {
             data: JSON.stringify(obj),
             async: 'asynchronous',
             success: function (response) {
-                alert('New button has been added');
+                $.snackbar({content: "New button has been successfully added", style:"snackbar-style"});
                 $('#contentForm').css('display','none');
                 $('#contentForm-title').val('');
                 $('#newContent').text('');
