@@ -7,6 +7,11 @@ body{
 .header-right{
     position: relative;
 }
+
+#addPage-tool-btn{
+    background: white;
+    color: #3f51b5 !important;
+}
 .mode-text{
     position: absolute;
     top: 10px;
@@ -89,7 +94,7 @@ table td, table th{
     position: absolute;
     top: 5px;
     right: 5px;
-    color: blue;
+    color: #3f51b5;
     cursor: pointer;
 }
 
@@ -101,6 +106,20 @@ table td, table th{
     top: 20%;
     left: 50%;
 }
+
+/*Add Page Form Style*/
+#addPageForm-container{
+    background: white;
+    display: none;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+}
+#addPageForm-container > .card-header, #addPage-btn{
+    background-color: #3f51b5 !important;
+    color: white;
+}
+
 
 .box-shadow{
     -webkit-transform: translate(-50%, -20%);

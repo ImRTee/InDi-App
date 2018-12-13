@@ -1,40 +1,84 @@
+//Things to fix:
+//No special character in button's title field
+//Page name needs to be unique
+//Adjust classes for popover buttons
+//Put classes into a separate folder in js folder
+
 $(document).ready(function(){
-    var pages = [];
+    var pageService = new PageService();
     var currentPage;
+
     $.ajax({
         type: 'GET',
         url: "/get-pageTable",
         async: 'asynchronous',
         success: function(response) {
+            //response format
             // [
             //     [
-            //         pageId, projectName, teamName, imagePath
+            //         pageId, projectName, teamName, confluenceLink, imagePath
             //     ]
             // ]
-            pages = response;
             //If there is no page
-            if (pages.length == 0) {
+            if (response.length == 0) {
                 var teamName = prompt('Welcome to InDi App, may I ask your team name please?');
                 var projectName = prompt("Great! What is the name of the project/application you want to use me to document? ");
                 var pageId = prompt("Thank you! Let's create the first page for you. What do you want to name it? ").replace(/ /g, '-');
                 var confluenceLink = prompt("What is the confluence link you want to attach to this page?");
-                var imagePath = 'empty';
+                var imagePath = pageService.getDefaultImagePath();
                 var page = new Page(pageId, projectName, teamName, confluenceLink, imagePath);
-                // console.log("Created page object", page);
-                page.addToDatabase();
-                pages.push(page);
+                //add to the page list in PageService.js
+                pageService.addPageToDatabase(page);
+                //If there is at least one page, get the first one to display
             } else {
-                var currentPageId = pages[0][0];
-                var currentPagePN= pages[0][1];
-                var currentPageTN= pages[0][2];
-                var currentPageCL = pages[0][3];
-                var currentPageIP= pages[0][4];
-                currentPage = new Page(currentPageId, currentPagePN, currentPageTN, currentPageCL, currentPageIP);
-                currentPage.getImage();
-                currentPage.retrieveButtons();
+                for (var i = 0; i < response.length; i++){
+                    var currentPageId = response[i][0];
+                    var currentPagePN= response[i][1];
+                    var currentPageTN= response[i][2];
+                    var currentPageCL = response[i][3];
+                    var currentPageIP= response[i][4];
+                    var page = new Page(currentPageId, currentPagePN, currentPageTN, currentPageCL, currentPageIP);
+                    //add to the page list in PageService.js
+                    pageService.fillUpPageList(page);
+                    //set up navigation bar
+                    var navItemHTML = `
+                        <li class="${i} nav-item">
+                            <a   class=" nav-link" >${currentPageId.replace(/-/g, " ")}<span class="sr-only">(current)</span></a>
+                        </li>
+                    `;
+                    $('#nav-list').append(navItemHTML);
+
+                }
+                pageService.setUpPage(0);
+                currentPage = pageService.getCurrentPage();
             }
         }
     });
+
+    //When nav-item is click
+    $('#nav-list').on('click', '.nav-item', function(){
+        //Clear the DOM
+        $("#main").load(location.href+" #main>*","");
+        //hide all popover
+        $('.popover-btn').popover('hide');
+        var index = Number($(this).attr('class')[0]);
+        pageService.setUpPage(index);
+        currentPage = pageService.getCurrentPage();
+
+    });
+    
+    $('#addPage-tool-btn').click(function () {
+        $("#addPageForm-container").css('display', 'block')
+    });
+    //Adding page mechanism
+    $('#addPage-btn').click( (e) => {
+        e.preventDefault();
+        var newPageId = $('#newPage-title').val().replace(/ /g, '-');
+        var newPagePN = $('#newPage-projectName').val();
+        var newPage = new Page(newPageId, newPagePN, currentPage.getTeamName(), currentPage.getConfluenceLink(), pageService.getDefaultImagePath());
+        pageService.addPageToDatabase(newPage)
+    });
+
 
     //When edit-content button on each popover is clicked, show up the contentUpdateForm
     $('body').on('click', `.popover > .popover-header >  .popover-edit`, function() {
@@ -164,7 +208,14 @@ $(document).ready(function(){
     });
 
 
-    // Upload button effect
+
+
+
+
+
+
+
+    // Buttons' effect
     $('.upload-btn-tool').on('click', function(){
         displayEffect('.upload-form-container', 'block')
     });
@@ -199,4 +250,3 @@ $(document).ready(function(){
 
 
 });
-

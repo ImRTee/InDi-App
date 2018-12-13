@@ -7,11 +7,20 @@ class Page{
         this.imagePath = imagePath;
         this.popoverBtns = [];
     };
-
     getPageId(){
         var copyPageId = this.pageId;
         return copyPageId;
     }
+    getTeamName(){
+        var copyTeamName = this.teamName;
+        return copyTeamName;
+    }
+    getConfluenceLink() {
+        var copyConfluenceLink = this.confluenceLink;
+        return copyConfluenceLink;
+    }
+
+
     getButtons(){
         var copyPageButtons = this.popoverBtns;
         return copyPageButtons
@@ -29,18 +38,6 @@ class Page{
         });
     }
 
-    addToDatabase(){
-        $.ajax({
-            type: 'POST',
-            url: "/add-page",
-            data: JSON.stringify(this),
-            async: 'asynchronous',
-            success: function (response) {
-                alert('New page has been added');
-                // window.location.href = "/"
-            }
-        })
-    }
     addButton(){
         if ( $('#contentForm-title').val() == "" || $('#newContent').text() == ""){
             alert('Please fill out required field(s)')
@@ -48,7 +45,7 @@ class Page{
             var id = $('#contentForm-title').val().replace(/ /g, "-"); //replace space with dash (-)
             //Replace double quote with single quote to avoid format issue when constructing html element when generating button
             var content = $('#newContent').html().replace(/"/g, " ' ");
-            var newPopoverBtn = new PopoverBtn(id, content, 0, 0, 40, 40, this.pageId);
+            var newPopoverBtn = new PopoverBtn(id, content, 0, 0, 60, 60, this.pageId);
             newPopoverBtn.addToDatabase();
             this.popoverBtns.push(newPopoverBtn);
             this.updateUI();
@@ -61,7 +58,8 @@ class Page{
     retrieveButtons(){
         // Retrieve popover buttons with their contents, positions and sizes
         $.ajax({
-            type: 'GET',
+            type: 'POST',
+            data:  JSON.stringify(this.pageId),
             url: "/get-popover-buttons",
             sync: 'synchronous',
             success: (response) => {
@@ -106,7 +104,7 @@ class Page{
         this.popoverBtns[index] = updatedBtn;
         console.log('button list  after updated ', this.popoverBtns);
         this.updateUI();
-        $('.popover-btn').css('opacity', '1');
+        $('.popover-btn').css('opacity', '0.5');
         this.draggableInitialize();
     }
     deleteBtn(btnId){

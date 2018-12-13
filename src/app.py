@@ -137,11 +137,12 @@ def getImagePath():
     result = c.fetchall()
     return jsonify(result)
 
-@app.route('/get-popover-buttons')
-def getContents():
+@app.route('/get-popover-buttons', methods=['POST'])
+def getPopoverBtns():
+    pageId = request.get_json("pageId")
     conn = sqlite3.connect(db.mainDataBasePath)
     c = conn.cursor()
-    c.execute("SELECT  *  from PopoverBtn WHERE btnId NOT IN ('image')") #Get all content not image
+    c.execute("SELECT  *  from PopoverBtn WHERE pageId = ?", (pageId, )) #Get all content not image
     result = c.fetchall()
     return jsonify(result)
 
