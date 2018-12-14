@@ -7,7 +7,6 @@
 $(document).ready(function(){
     var pageService = new PageService();
     var currentPage;
-
     $.ajax({
         type: 'GET',
         url: "/get-pageTable",
@@ -47,7 +46,6 @@ $(document).ready(function(){
                         </li>
                     `;
                     $('#nav-list').append(navItemHTML);
-
                 }
                 pageService.setUpPage(0);
                 currentPage = pageService.getCurrentPage();
@@ -82,54 +80,6 @@ $(document).ready(function(){
         }
     });
 
-
-    //When edit-content button on each popover is clicked, show up the contentUpdateForm
-    $('body').on('click', `.popover > .popover-header >  .popover-edit`, function() {
-        //Since the id of the button was attached as the first class of the edit-button when the popover-btn was created, we get the id back as
-        const btnId = $(this).attr('class').split(/\s+/)[0];
-        //Use this id to get the  title and data-content of the popover-btn
-        var originTitle = btnId.replace(/-/g, " ");
-        var originContent = $(`#${btnId}`).attr('data-content');
-        //Popup the contentUpdateForm and load up the original details
-        $('#contentUpdateForm-oldBtnId').val(btnId);
-        // $('#contentUpdateForm').css('display', 'block');
-        $('#contentUpdateForm-title').val(originTitle);
-        $('#newUpdateContent').html(originContent);
-        //Hide all popovers
-        $('.popover-btn').popover('hide');
-        //Update content (when updateContent button is clicked)
-        $('body').on('click', '#updateContentBtn', (e) => {
-            e.preventDefault();
-            var originId =$('#contentUpdateForm-oldBtnId').val()  ;
-            var newId = $('#contentUpdateForm-title').val().replace(/ /g,"-");
-            var newContent = $('#newUpdateContent').html();
-
-            currentPage.updateBtnContent(originId, newId, newContent);
-        })
-    });
-
-    //When the popover-delete button is clicked:
-    $('body').on('click', `.popover > .popover-header >  .popover-delete`, function () {
-        const btnId = $(this).attr('class').split(/\s+/)[0];
-        if(confirm('Are you sure you want to delete this popover button?')){
-            currentPage.deleteBtn(btnId);
-        }
-    });
-
-    //intercept upload-form submission to overwrite the action to include pageId in the request
-    //This let the backend know which page this picture belongs to
-    $('#upload-form').submit(function(){
-        var currentPageId = currentPage.getPageId() ;
-        this.action = `/upload?pageId=${currentPageId}`;
-        this.method = 'post'
-    });
-
-    //Add button mechanism
-    $('#addContentBtn').on('click', function (e){
-        e.preventDefault();
-        currentPage.addButton();
-    });
-    //End of adding buttons mechanism
     //When the edit mode button is clicked,
     $('#mode-btn').click(  ()=>{
         //If in 'Edit' mode
@@ -170,6 +120,31 @@ $(document).ready(function(){
     });
     // End  of mode-btn clicking effect
 
+    //Upload diagram mechanism
+    //intercept upload-form submission to overwrite the action to include pageId in the request
+    //This let the backend know which page this picture belongs to
+    $('#upload-form').submit(function(){
+        var currentPageId = currentPage.getPageId() ;
+        this.action = `/upload?pageId=${currentPageId}`;
+        this.method = 'post'
+    });
+    //End of Upload form mechanism
+
+    //Add button mechanism
+    $('#addContentBtn').on('click', function (e){
+        e.preventDefault();
+        currentPage.addButton();
+    });
+    //End of adding buttons mechanism
+
+    //Delete page mechanism
+    $('#deletePageBtn').click(function () {
+        if ( confirm('Are you sure that you want to delete this page?')){
+            pageService.deletePage();
+        }
+    });
+    //End of deleting page mechanism
+
     //Popover buttons' clicking effect
     $('.popover-btn').on('click', function(){
         if ($(this).hasClass('active')){
@@ -183,8 +158,7 @@ $(document).ready(function(){
             $(this).children().removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
         }
     });
-
-
+    //End of popover buttons's click effect
 
     //Popover-tool: Show and Hide Logic
     //When showing the popover
@@ -206,6 +180,39 @@ $(document).ready(function(){
         $(this).removeClass('active');
         // Arrow change
         $(this).children().removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
+    });
+
+    //When edit-content button on each popover is clicked, show up the contentUpdateForm
+    $('body').on('click', `.popover > .popover-header >  .popover-edit`, function() {
+        //Since the id of the button was attached as the first class of the edit-button when the popover-btn was created, we get the id back as
+        const btnId = $(this).attr('class').split(/\s+/)[0];
+        //Use this id to get the  title and data-content of the popover-btn
+        var originTitle = btnId.replace(/-/g, " ");
+        var originContent = $(`#${btnId}`).attr('data-content');
+        //Popup the contentUpdateForm and load up the original details
+        $('#contentUpdateForm-oldBtnId').val(btnId);
+        // $('#contentUpdateForm').css('display', 'block');
+        $('#contentUpdateForm-title').val(originTitle);
+        $('#newUpdateContent').html(originContent);
+        //Hide all popovers
+        $('.popover-btn').popover('hide');
+        //Update content (when updateContent button is clicked)
+        $('body').on('click', '#updateContentBtn', (e) => {
+            e.preventDefault();
+            var originId =$('#contentUpdateForm-oldBtnId').val()  ;
+            var newId = $('#contentUpdateForm-title').val().replace(/ /g,"-");
+            var newContent = $('#newUpdateContent').html();
+
+            currentPage.updateBtnContent(originId, newId, newContent);
+        })
+    });
+
+    //When the popover-delete button is clicked:
+    $('body').on('click', `.popover > .popover-header >  .popover-delete`, function () {
+        const btnId = $(this).attr('class').split(/\s+/)[0];
+        if(confirm('Are you sure you want to delete this popover button?')){
+            currentPage.deleteBtn(btnId);
+        }
     });
 
 

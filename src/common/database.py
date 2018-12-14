@@ -31,6 +31,13 @@ class Database():
         conn.commit()
         conn.close()
 
+    def deletePage(self, pageId):
+        conn = sqlite3.connect(self.mainDataBasePath)
+        c = conn.cursor()
+        c.execute("DELETE FROM Page WHERE  pageId = ?", (pageId, ))
+        conn.commit()
+        conn.close()
+
 
     def updateContent(self, originId, newId, newContent):
         conn = sqlite3.connect(self.mainDataBasePath)
@@ -99,13 +106,6 @@ class Database():
                 )""")
         print("PopoverBtn Table Created")
 
-    # def insertDefaultImagePath(self):
-    #     conn = sqlite3.connect(self.mainDataBasePath)
-    #     c = conn.cursor()
-    #     c.execute("INSERT INTO PopoverBtn  VALUES (?,?,?,?,?,?,?)", ('image', 'empty', '','','','' ))
-    #     conn.commit()
-    #     conn.close()
-    #     print('Default image path inserted')
 
     def deleteBtn(self, id):
         conn = sqlite3.connect(self.mainDataBasePath)

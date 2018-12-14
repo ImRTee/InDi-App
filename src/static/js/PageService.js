@@ -12,7 +12,7 @@ class  PageService {
     setUpPage(index){
         this.currentPage = this.pages[index];
         $('#page-title').text(this.currentPage.projectName + " " + this.currentPage.pageId.replace(/-/g, " "));
-        $('#teamName').html(`<a href="/${this.currentPage.confluenceLink}">${this.currentPage.teamName}</a>`);
+        $('#teamName').html(`<a href="http://${this.currentPage.confluenceLink}" target="_blank   ">${this.currentPage.teamName}</a>`);
         $( '#nav-list .nav-item').removeClass('active');
         $( `#nav-list .nav-item:nth-child(${index+1})`).addClass('active');
         this.currentPage.getImage();
@@ -36,5 +36,17 @@ class  PageService {
     }
     fillUpPageList(page){
         this.pages.push(page)
+    }
+
+    deletePage(){
+        $.ajax({
+            type: 'POST',
+            url: "/delete-page",
+            data: JSON.stringify(this.currentPage.getPageId()),
+            async: 'asynchronous',
+            success: function (response) {
+                window.location.href = "/"
+            }
+        })
     }
 }

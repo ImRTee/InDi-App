@@ -35,8 +35,8 @@ body{
     width:  40px;
     height: 40px;
     border-radius: 100%;
-    background-color:  Orange !important;
     border:  none ;
+    color: white;
 }
 .tool-btn:focus{
     outline:  none;
@@ -61,8 +61,8 @@ body{
     opacity: 0;
     position: absolute;
     border-radius:  14px;
-    background-color: #31803f !important;
-    border-color: #31803f;
+    background-color:  #3f51b5!important;
+    border-color:  #3f51b5;
     color: white;
     top: 0;
     right: 0;
@@ -80,10 +80,18 @@ body{
     padding: 20px 15px;
 }
 .popover-btn.active{
-    color: green;
+    color: #3f51b5  ;
     background-color: white !important;
-    border: 2px solid green;
+    border: 2px solid #3f51b5  ;
 }
+.popover-header{
+    background-color: #3f51b5  !important;
+    color: white;
+}
+.arrow::before, .arrow::after{
+    border-right-color: #3f51b5  !important;
+}
+
 table td, table th{
     border: 1px solid black;
 }
@@ -95,7 +103,6 @@ table td, table th{
     position: absolute;
     top: 5px;
     right: 5px;
-    color: #3f51b5;
     cursor: pointer;
 }
 

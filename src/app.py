@@ -44,6 +44,11 @@ def addPage():
     db.insertPage(pageId, projectName, teamName, confluenceLink, imagePath)
     return 'Page successfully added'
 
+@app.route('/delete-page', methods=['POST'])
+def deletePage():
+    pageId = request.get_json('PageId')
+    db.deletePage(pageId)
+    return 'Page successfully deleted'
 
 
 # Source: https://stackoverflow.com/questions/44926465/upload-image-in-flask
@@ -120,14 +125,6 @@ def updateContent():
     return ''
 
 
-# @app.route('/get-positions')
-# def getPositions():
-#     conn = sqlite3.connect(db.mainDataBasePath)
-#     c = conn.cursor()
-#     result = c.execute("SELECT * from PopoverBtn")
-#     resultList = result.fetchall()
-#     return jsonify(resultList)
-
 @app.route('/get-image')
 def getImagePath():
     pageId = request.args.get('pageId')
@@ -152,16 +149,6 @@ def deleteBtn():
     db.deleteBtn(id)
     return ''
 
-
-# # Check if the button has already been inserted into the table
-# def isExisitngBtn(id):
-#     conn = sqlite3.connect(db.mainDataBasePath)
-#     c = conn.cursor()
-#     result = c.execute("SELECT count(*) FROM PopoverBtn WHERE id = :id", {'id': id})
-#     isExist = result.fetchone()[0]
-#     conn.commit()
-#     conn.close()
-#     return  isExist
 
 # Source: http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
 def allowed_file(filename):

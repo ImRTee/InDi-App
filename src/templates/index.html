@@ -4,9 +4,11 @@
                 <!-- Required meta tags -->
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-                <title>Architecture Diagram</title>
+                <title>InDi App</title>
+                <!--Favicon-->
+                <link rel="icon" href="{{ url_for('static', filename='images/logo.jpg')}}" type="image/x-icon" />
 
-                  <!-- Font Awesome -->
+            <!-- Font Awesome -->
                  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
                     <!-- core CSS of SnackbarJS, find it in /dist -->
                  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='side-packages/snackbarjs-master/dist/snackbar.min.css')}}">
@@ -29,6 +31,9 @@
                 <script  src="{{url_for('static', filename='side-packages/snackbarjs-master/dist/snackbar.min.js')}}"></script>
                  <script  src="{{url_for('static', filename='js/PageService.js')}}"></script>
         </head>
+
+        <!--Snackbar reference-->
+        <!--https://github.com/FezVrasta/snackbarjs-->
         <header>
             <nav class="navbar navbar-expand-lg navbar-dark indigo  px-5">
                 <a class="navbar-brand mr-5" style="font-family: 'Architects Daughter', cursive; font-weight: 900; font-size: 30px" href="" ><strong>InDi App</strong></a>
@@ -45,7 +50,6 @@
                     </button>
                 </div>
             </nav>
-
         </header>
 
     
@@ -55,16 +59,35 @@
         <div class="w-25"></div>
 
         <div class="w-50" >
-            <center><h1 id="page-title"  class="mt-5" style="font-family: 'Rockwell Extra Bold'"></h1></center>
+            <center><h1 id="page-title"  class="mt-5" style="font-family: Calibri"></h1></center>
             <center><h3 id="teamName"><a target="_blank" href=""></a> </h3></center>
         </div>
 
+        <!--Edit page buttons-->
         <div class="header-right w-25 ">
                 <h6 class="mode-text">Mode: Display </h6>
                 <button id="mode-btn" class="  btn btn-success mt-3 mr-5  " >Edit</button>
                 <div class="tool-btns text-right pr-5 pt-2">
-                    <button class="upload-btn-tool tool-btn mr-1 waves-effect box-shadow " data-toggle="modal" data-target="#uploadModal"><i class="fas fa-upload"></i></button>
-                    <button class=" add-btn-tool tool-btn waves-effect box-shadow" data-toggle="modal" data-target="#addContentModal"><i class="fas fa-plus-circle"></i></button>
+                    <!--Upload button-->
+                    <button class="upload-btn-tool tool-btn mr-1 waves-effect box-shadow "
+                            data-toggle="modal"  data-target="#uploadModal"
+                            style="background :#6a1b9a !important; "
+                            data-toggle="tooltip" data-placement="bottom" title="Upload diagram">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                    <!--Add-popover buttons-->
+                    <button class=" add-btn-tool tool-btn waves-effect box-shadow mr-1"
+                            data-toggle="modal" data-target="#addContentModal"
+                            style="background:  #00c851!important;"
+                            data-toggle="tooltip" data-placement="bottom" title="Add new popover button">
+                        <i class="fas fa-plus-circle"></i>
+                    </button>
+                    <!--Delete page button-->
+                    <button id="deletePageBtn" class=" deletePage-btn-tool tool-btn waves-effect box-shadow"
+                            style="background:  #ff4444 !important;"
+                            data-toggle="tooltip" data-placement="bottom" title="Delete page">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -78,10 +101,10 @@
     <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" style="background: #6a1b9a; color: white">
                     <h5 class="modal-title" id="uploadModalLabel"><strong>Upload Your Diagram</strong></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true" style="color: white">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -104,13 +127,12 @@
         </div>
     </div>
 
-
     <!--Add Content form-->
     <div class="modal fade" id="addContentModal" tabindex="-1" role="dialog" aria-labelledby="addContentModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addContentModalLabel"><strong>Add Page Form</strong></h5>
+                <div class="modal-header" style="background: #00c851!important; color: white">
+                    <h5 class="modal-title" id="addContentModalLabel"><strong>Add Popover Button</strong></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -198,8 +220,8 @@
     <div class="modal fade" id="updateContentModal" tabindex="-1" role="dialog" aria-labelledby="updateContentModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="updateContentModalLabel" style="color: #3f51b5 "><strong>Update Content</strong></h5>
+                <div class="modal-header" style="background: #00b8d4  ; color: white ">
+                    <h5 class="modal-title" id="updateContentModalLabel" style="color: white "><strong>Update Content</strong></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -276,19 +298,18 @@
                         </div>
                         <div id="newUpdateContent" contenteditable="true" class="text-left mx-auto form-control"></div>
                         <p id="contentUpdateForm-editMode"><input type="checkbox" name="switchMode" id="contentUpdateForm-switchBox" onchange="setUpdateDocMode(this.checked);" /> <label for="contentUpdateForm-switchBox">Show HTML</label></p>
-                        <button type="submit" id="updateContentBtn" class="btn btn-block btn-primary" data-dismiss="modal">Update</button>
+                        <button type="submit" id="updateContentBtn" class="btn btn-block" data-dismiss="modal" style="background: #00b8d4  ">Update</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-
     <!--addPage-form-->
     <div class="modal fade" id="addPageModal" tabindex="-1" role="dialog" aria-labelledby="addPageModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" style="background: #3f51b5; color: white">
                     <h5 class="modal-title" id="addPageModalLabel"><strong>Add Page Form</strong></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -317,6 +338,32 @@
 
 
 
+    <!-- Footer -->
+    <footer class="page-footer font-small indigo darken-3 pt-4">
+        <!-- Footer Elements -->
+        <div class="container">
+            <!-- Call to action -->
+            <ul class="list-unstyled list-inline text-center py-2">
+                <li class="list-inline-item">
+                    <h5 class="mb-1">Interested in having me in your team?</h5>
+                </li>
+                <li class="list-inline-item">
+                    <a href="https://bitbucket.org/ImRTee/xproject/src/master/" target="_blank" class="btn btn-outline-white btn-rounded">Deploy me!</a>
+                </li>
+            </ul>
+            <!-- Call to action -->
+
+        </div>
+        <!-- Footer Elements -->
+
+        <!-- Copyright -->
+        <div class="footer-copyright text-center py-3">Creator:
+            <a href="https://www.linkedin.com/in/raymondhieutran/" target="_blank"> Raymond Hieu Tran</a>
+        </div>
+        <!-- Copyright -->
+
+    </footer>
+    <!-- Footer -->
 
 
     <!-- Bootstrap tooltips -->
@@ -326,15 +373,9 @@
     <!-- MDB core JavaScript -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.14/js/mdb.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
-
-
     <script src="{{url_for('static', filename='js/text-editor.js')}}"></script>
     <script src="{{url_for('static', filename='js/PopoverBtn.js')}}"></script>
     <script src="{{url_for('static', filename='js/Page.js')}}"></script>
-    <!--<script>-->
-        <!--$('body').bootstrapMaterialDesign();-->
-    <!--</script>-->
-
     <script src="{{url_for('static', filename='js/app.js')}}"></script>
 
     </body>

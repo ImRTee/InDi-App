@@ -133,7 +133,7 @@ class Page{
                                                 <h4><strong>${title}</strong></h4>
                                            </div>
                                            <div  class='${btnId} popover-edit popover-tool' style='margin-right: 15px' data-toggle='modal' data-target='#updateContentModal'>
-                                                <i class=' far fa-edit '></i>
+                                                <i class=' far fa-edit' style='color: #00b8d4'></i>
                                             </div>
                                              <div class='${btnId} popover-delete popover-tool'>
                                                  <i class='far fa-trash-alt' style='color: red'></i>
