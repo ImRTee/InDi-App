@@ -1,5 +1,5 @@
 //Things to fix:
-//No special character in button's title field
+//No special character in button's title field ( ', ? )
 //Page name needs to be unique
 //Adjust classes for popover buttons
 //Put classes into a separate folder in js folder
@@ -200,8 +200,8 @@ $(document).ready(function(){
         $('body').on('click', '#updateContentBtn', (e) => {
             e.preventDefault();
             var originId =$('#contentUpdateForm-oldBtnId').val()  ;
-            var newId = $('#contentUpdateForm-title').val().replace(/ /g,"-");
-            var newContent = $('#newUpdateContent').html();
+            var newId = $('#contentUpdateForm-title').val().replace(/ /g,"-").replace(/'/g, '');
+            var newContent = $('#newUpdateContent').html().replace(/"/g, " ' ");
 
             currentPage.updateBtnContent(originId, newId, newContent);
         })

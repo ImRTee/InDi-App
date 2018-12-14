@@ -35,6 +35,7 @@ class Database():
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         c.execute("DELETE FROM Page WHERE  pageId = ?", (pageId, ))
+        c.execute("DELETE FROM PopoverBtn WHERE  pageId = ?", (pageId, ))
         conn.commit()
         conn.close()
 

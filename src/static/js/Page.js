@@ -42,7 +42,7 @@ class Page{
         if ( $('#contentForm-title').val() == "" || $('#newContent').text() == ""){
             alert('Please fill out required field(s)')
         }else {
-            var id = $('#contentForm-title').val().replace(/ /g, "-"); //replace space with dash (-)
+            var id = $('#contentForm-title').val().replace(/ /g, "-").replace(/'/g, ''); //replace space with dash (-)
             //Replace double quote with single quote to avoid format issue when constructing html element when generating button
             var content = $('#newContent').html().replace(/"/g, " ' ");
             var newPopoverBtn = new PopoverBtn(id, content, 0, 0, 60, 60, this.pageId);

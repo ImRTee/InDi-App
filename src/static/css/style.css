@@ -54,7 +54,7 @@ body{
 
 /* Popover styles */
 .popover{
-    max-width: 500px;
+    max-width: 1200px;
 }
 .popover-btn{
     position: relative;
