@@ -1,220 +1,218 @@
-class Page{
-    constructor(pageId, projectName, teamName,confluenceLink, imagePath){
-        this.pageId = pageId;
-        this.projectName = projectName;
-        this.teamName = teamName;
-        this.confluenceLink = confluenceLink;
-        this.imagePath = imagePath;
-        this.popoverBtns = [];
-    };
-    getPageId(){
-        var copyPageId = this.pageId;
-        return copyPageId;
-    }
-    getTeamName(){
-        var copyTeamName = this.teamName;
-        return copyTeamName;
-    }
-    getConfluenceLink() {
-        var copyConfluenceLink = this.confluenceLink;
-        return copyConfluenceLink;
-    }
+$(document).ready(function(){
+    var pageService = new PageService();
+    currentPage.getImage();
+    currentPage.retrieveButtons();
+    // $.ajax({
+    //     type: 'GET',
+    //     url: "/get-pageTable",
+    //     async: 'synchronous',
+    //     success: function(response) {
+    //         //response format
+    //         // [
+    //         //     [
+    //         //         pageId, projectName, teamName, confluenceLink, imagePath
+    //         //     ]
+    //         // ]
+    //         //If there is no page
+    //         if (response.length == 0) {
+    //         }
+    //     }
+    // });
 
+    //Switch page mechanism
+    $('#nav-list').on('click', '.nav-item', function(){
+        //Clear the DOM
+        $('.popover-btn').popover('hide');
+        //Hide all popover
+        var index = Number($(this).attr('class')[0]);
+        pageService.setUpPage(index);
+        currentPage = pageService.getCurrentPage();
+    });
 
-    getButtons(){
-        var copyPageButtons = this.popoverBtns;
-        return copyPageButtons
-    }
-    getImage(){
-        $.ajax({
-            type: 'GET',
-            url: "/get-image",
-            data: {'pageId': this.getPageId()},
-            async: 'asynchronous',
-            success: function(response){
-                this.imagePath =  response[0][0];
-                $('#diagram-img').attr('src', this.imagePath)
-            }
-        });
-    }
-
-    addButton(){
-        if ( $('#contentForm-title').val() == "" || $('#newContent').text() == ""){
-            alert('Please fill out required field(s)')
+    $('#addPage-tool-btn').click(function () {
+        $('.popover-btn').popover('hide');
+        $("#addPageForm-container").css('display', 'block')
+    });
+    //Adding page mechanism
+    $('#addPage-btn').click( (e) => {
+        e.preventDefault();
+        var newPageId = $('#newPage-title').val().replace(/ /g, '-');
+        var newPagePN = $('#newPage-projectName').val();
+        var newPageLink = $('#newPage-link').val();
+        var newPageTeamId = teamId;
+        if ( newPageId ==""|| newPagePN =="" || newPagePN == " " ){
+            alert('Please fill out all fields')
         }else {
-            var id = $('#contentForm-title').val().replace(/ /g, "-").replace(/'/g, ''); //replace space with dash (-)
-            //Replace double quote with single quote to avoid format issue when constructing html element when generating button
-            var content = $('#newContent').html().replace(/"/g, " ' ");
-            var newPopoverBtn = new PopoverBtn(id, content, 0, 0, 60, 60, this.pageId);
-            newPopoverBtn.addToDatabase();
-            this.popoverBtns.push(newPopoverBtn);
-            this.updateUI();
+            var newPage = new Page(newPageId, newPagePN,  newPageTN, pageService.getDefaultImagePath());
+            pageService.addPageToDatabase(newPage)
+        }
+    });
+
+    //When the edit mode button is clicked,
+    $('#mode-btn').click(  ()=>{
+        //If in 'Edit' mode
+        if ($('#mode-btn').text()== 'Edit') {
+            // $('.main-content > div').addClass('draggable');
+            //Change mode button to display mode
+            $('#mode-btn').text('Display');
+            //Change mode's button color
+            $('#mode-btn').removeClass('btn-success').addClass('btn-primary') ;
+            //Change mode text to 'Edit mode'
+            $('.mode-text').text('Edit mode');
+            //Show tool buttons
+            $('.tool-btns').css('display', 'block');
+            //Make popover buttons  visible
             $('.popover-btn').css('opacity', '0.5');
-            this.draggableInitialize();
+            currentPage.draggableInitialize();
             $('.draggable').draggable('enable'); //Enable
             $('.draggable').resizable('enable');
+
+            //Switch to 'Display' mode
+        } else if ($('#mode-btn').text()== 'Display'){
+            $('.draggable').draggable('disable');
+            //Make popover-body to be editable
+            $('.popover-body').attr('contentEditable', 'false');
+            //Change mode button's text to 'Edit'
+            $('#mode-btn').text('Edit');
+            //Change mode button's color
+            $('#mode-btn').removeClass('btn-primary').addClass('btn-success');
+            //Update the mode status
+            $('.mode-text').text('Display mode');
+            //Hide all popovers
+            $('.popover-btn').popover('hide');
+            //Hide all tool buttons
+            $('.tool-btns').css('display', 'none');
+            //Make popover buttons  invisible
+            $('.popover-btn').css('opacity', '0');
         }
-    }
-    retrieveButtons(){
-        //Make sure the list is empty before retrieving buttons into
-        this.popoverBtns = [];
-        // Retrieve popover buttons with their contents, positions and sizes
-        $.ajax({
-            type: 'POST',
-            data:  JSON.stringify(this.pageId),
-            url: "/get-popover-buttons",
-            sync: 'synchronous',
-            success: (response) => {
-                // Response format
-                // [
-                //     0: [
-                //         0: "id" (string)
-                //         1: "content"(string)
-                //         2: left (real)
-                //         3: top( real)
-                //         4: width ( real )
-                //         5: height ( real )
-                //     ]
-                // ]
-                // Start a loop to get popover-btn details
-                for ( var i = 0; i < response.length; i++) {
-                    //Provision attributes
-                    var id = response[i][0];
-                    var content = response[i][1];
-                    var leftPosition = response[i][2];
-                    var topPosition = response[i][3];
-                    var width = response[i][4];
-                    var height = response[i][5];
-                    // Create buttons and add to the UI
-                    var popoverBtn = new PopoverBtn(id, content, leftPosition, topPosition, width, height, this.pageId);
-                    this.popoverBtns.push(popoverBtn);
-                }
-                this.updateUI();
-            }
-        });
-        // End of retrieving popover buttons with their contents, positions and sizes
-    }
+    });
+    // End  of mode-btn clicking effect
 
-    updateBtnContent(originId, newId, newContent){
-        var updatingBtn = this.popoverBtns.find((button)=>{ return button['btnId']== originId });
-        var indexOfUpdatingBtn = this.popoverBtns.indexOf(updatingBtn);
-        var updatedBtn = updatingBtn.updateContent(newId , newContent, this.pageId);
-        this.updateButton(updatedBtn, indexOfUpdatingBtn);
-    }
+    //Upload diagram mechanism
+    //intercept upload-form submission to overwrite the action to include pageId in the request
+    //This let the backend know which page this picture belongs to
+    $('#upload-form').submit(function(){
+        var currentPageId = currentPage.getPageId() ;
+        this.action = `/upload?pageId=${currentPageId}&teamId=${teamId}`;
+        this.method = 'post'
+    });
+    //End of Upload form mechanism
 
-    updateButton(updatedBtn, index){
-        this.popoverBtns[index] = updatedBtn;
-        console.log('button list  after updated ', this.popoverBtns);
-        this.updateUI();
-        $('.popover-btn').css('opacity', '0.5');
-        this.draggableInitialize();
-    }
-    deleteBtn(btnId){
-        var deletingBtn = this.popoverBtns.find((button)=>{ return button['btnId']== btnId });
-        var index = this.popoverBtns.indexOf(deletingBtn)
-        deletingBtn.deleteBtn(btnId);
-        this.popoverBtns.splice(index, 1);
-    }
+    //Add button mechanism
+    $('#addContentBtn').on('click', function (e){
+        e.preventDefault();
+        currentPage.addButton(teamId);
+    });
+    //End of adding buttons mechanism
 
-
-    updateUI() {
-        $('.popover-btn').remove();
-        for (var i = 0; i < this.popoverBtns.length; i++) {
-            var btnId = this.popoverBtns[i]['btnId'];
-            var content = this.popoverBtns[i]['content'];
-            var left = this.popoverBtns[i]['left'];
-            var top = this.popoverBtns[i]['top'];
-            var width = this.popoverBtns[i]['width'];
-            var height = this.popoverBtns[i]['height'];
-            var title = btnId.replace(/-/g, " "); //Replace dash ( - ) with space to format title
-            var htmlButton = `
-                            <div id=${btnId} class="popover-btn p-l-1" data-container="body" data-toggle="popover" data-placement="right" data-html="true"
-                                title="<div class='pop-up-title text-center' >
-                                                <h4><strong>${title}</strong></h4>
-                                           </div>
-                                           <div  class='${btnId} popover-edit popover-tool' style='margin-right: 15px' data-toggle='modal' data-target='#updateContentModal'>
-                                                <i class=' far fa-edit' style='color: #00b8d4'></i>
-                                            </div>
-                                             <div class='${btnId} popover-delete popover-tool'>
-                                                 <i class='far fa-trash-alt' style='color: red'></i>
-                                             </div>"
-                                data-content= "${content}">
-                                <i class="popover-icon fas fa-angle-double-down"></i>
-                             </div>`;
-            //Add button to the screen
-            $('.main-content').append(htmlButton);
-            //Add pop-over effect to the created button
-            $(`#${btnId}`).popover();
-            //After the buttons is created, get their positions
-            $(`#${btnId}`).css('left', left);
-            $(`#${btnId}`).css('top', top);
-            //Get size
-            $(`#${btnId}`).css('width',  `${width}px`);
-            $(`#${btnId}`).css('height', `${height}px`);
+    //Delete page mechanism
+    $('#deletePageBtn').click(function () {
+        if ( confirm('Are you sure that you want to delete this page?')){
+            pageService.deletePage();
         }
-        //If in edit mode, show buttons
+    });
+    //End of deleting page mechanism
+
+    //Popover buttons' clicking effect
+    $('.popover-btn').on('click', function(){
+        if ($(this).hasClass('active')){
+            $(this).removeClass('active');
+            // Arrow change
+            $(this).children().removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
+        } else{
+            $(this).addClass('active');
+            $(this).addClass('');
+            // Arrow change
+            $(this).children().removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
+        }
+    });
+    //End of popover buttons's click effect
+
+    //Popover-tool: Show and Hide Logic
+    //When showing the popover
+    $('.main-content').on('shown.bs.popover', '.popover-btn', function (){
+        // When in edit mode
         if ($('#mode-btn').text() == 'Display'){
-            console.log('what?')
-            $('.popover-btn').css('opacity', '0.5');
-            this.draggableInitialize();
+            //Show popover-tools
+            $('.popover-tool').css('display', 'block');
+            //When in display mode
+        }else{
+            //Hide popover-tools
+            $('.popover-tool').css('display', 'none');
         }
+        $(this).addClass('active');
+        // Arrow change
+        $(this).children().removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
+    });
+    $('.main-content').on('hidden.bs.popover', '.popover-btn', function () {
+        $(this).removeClass('active');
+        // Arrow change
+        $(this).children().removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
+    });
+
+    //When edit-content button on each popover is clicked, show up the contentUpdateForm
+    $('body').on('click', `.popover > .popover-header >  .popover-edit`, function() {
+        //Since the id of the button was attached as the first class of the edit-button when the popover-btn was created, we get the id back as
+        const btnId = $(this).attr('class').split(/\s+/)[0];
+        //Use this id to get the  title and data-content of the popover-btn
+        var originTitle = btnId.replace(/-/g, " ");
+        var originContent = $(`#${btnId}`).attr('data-content');
+        //Popup the contentUpdateForm and load up the original details
+        $('#contentUpdateForm-oldBtnId').val(btnId);
+        // $('#contentUpdateForm').css('display', 'block');
+        $('#contentUpdateForm-title').val(originTitle);
+        $('#newUpdateContent').html(originContent);
+        //Hide all popovers
+        $('.popover-btn').popover('hide');
+        //Update content (when updateContent button is clicked)
+        $('body').on('click', '#updateContentBtn', (e) => {
+            e.preventDefault();
+            var originId =$('#contentUpdateForm-oldBtnId').val()  ;
+            var newId = $('#contentUpdateForm-title').val().replace(/ /g,"-").replace(/'/g, '');
+            var newContent = $('#newUpdateContent').html().replace(/"/g, " ' ");
+
+            currentPage.updateBtnContent(originId, newId, newContent);
+        })
+    });
+
+    //When the popover-delete button is clicked:
+    $('body').on('click', `.popover > .popover-header >  .popover-delete`, function () {
+        const btnId = $(this).attr('class').split(/\s+/)[0];
+        if(confirm('Are you sure you want to delete this popover button?')){
+            currentPage.deleteBtn(btnId);
+        }
+    });
+
+
+    // Buttons' effect
+    $('.upload-btn-tool').on('click', function(){
+        displayEffect('.upload-form-container', 'block')
+    });
+
+    $('.close-upload').on('click', function () {
+        displayEffect('.upload-form-container', 'none')
+    });
+
+    $('.add-btn-tool').on('click', function(){
+        displayEffect('#contentForm', 'block');
+        $('.popover-btn').popover('hide');
+    });
+
+    $('.close-add').on('click', function () {
+        displayEffect('#contentForm', 'none')
+    });
+    $('.close-update').on('click', function () {
+        displayEffect('#contentUpdateForm', 'none')
+    });
+
+
+    // Use to diplay or hide an element
+    // Input element: String (e.g .class, #id)
+    //             type: String (block or none)
+    function displayEffect(element, type){
+        $(element).css('display',type)
     }
 
-    draggableInitialize(){
-        //Add class draggable for all children under class main-content
-        $('.main-content > div').addClass('draggable');
-        // Initialize and configure draggable function After every drag event: the id, positions[top,left] are written to btnPositions table
-        $('.draggable').draggable({
-            stop: (event, ui) => {
-                var btnObj = {};
-                btnObj['id'] = ui.helper[0].id;
-                btnObj['position'] = ui.position;
-                $.ajax({
-                    type: 'POST',
-                    url: "/updateContent-position",
-                    data: JSON.stringify(btnObj),
-                    async: 'asynchronous',
-                    success: (response) => {
-                        var updatingBtn = this.popoverBtns.find((button)=> {return button.getBtnId() == btnObj['id']});
-                        var newLeft = btnObj['position']['left'];
-                        var newTop = btnObj['position']['top'];
-                        updatingBtn.updatePos(newLeft, newTop);
-                        var index = this.popoverBtns.indexOf(updatingBtn);
-                        this.popoverBtns[index] = updatingBtn;
-
-                    }
-                })
-            }
-        }).resizable({
-            animate: true,
-            animateDuration: "500",
-            animateEasing: "easeOutBounce",
-            ghost: true,
-            stop: (event, ui)=>{
-                setTimeout(() => {
-                    var sizeObj = {};
-                    sizeObj['id'] = ui.element[0].id ;
-                    sizeObj['size'] = ui.size;
-                    $.ajax({
-                        type: 'POST',
-                        url: "/updateContent-size",
-                        data: JSON.stringify(sizeObj),
-                        async: 'asynchronous',
-                        success:  (response) => {
-                            var updatingBtn = this.popoverBtns.find((button)=> {
-                                return button.getBtnId() == sizeObj['id']
-                            });
-                            var newWidth = sizeObj['size']['width'];
-                            var newHeight = sizeObj['size']['height'];
-                            updatingBtn.updateSize(newWidth, newHeight);
-                            var index = this.popoverBtns.indexOf(updatingBtn);
-                            this.popoverBtns[index] = updatingBtn;
-                        }
-                    })
-                }, 700);
-            }
-        });
-    }
 
 
-}
+});

@@ -1,5 +1,5 @@
 class PopoverBtn {
-    constructor(btnId,  content, left, top, width, height, pageId) {
+    constructor(btnId,  content, left, top, width, height, pageId, teamId) {
         this.btnId =  btnId;
         this.content = content;
         this.left = left;
@@ -7,29 +7,33 @@ class PopoverBtn {
         this.width = width;
         this.height = height;
         this.pageId = pageId;
+        this.teamId = teamId;
     }
     getBtnId(){
         var copyBtnId = this.btnId;
         return copyBtnId
     }
-    deleteBtn (id){
+    deleteBtn (){
         $.ajax({
             type: 'POST',
             url: '/delete-button',
-            data: JSON.stringify(id),
-            success: function (response) {
-                // window.location.href = "/"
+            data: JSON.stringify({btnId: this.btnId, pageId: this.pageId, teamId: this.teamId}),
+            async: 'asynchronous',
+            success: (response) =>{
+                $.snackbar({content: "Button deleted successfully", style:"snackbar-style"});
                 $('.popover-btn').popover('hide');
-                $(`#${id}`).remove();
+                $(`#${this.btnId}`).remove();
             }
         })
     };
 
-    updateContent(newId, newContent, pageId){
+    updateContent(newId, newContent, pageId, teamId){
         var newContentObj = {
             originId:  this.btnId,
             newId: newId,
-            newContent:  newContent
+            newContent:  newContent,
+            pageId: pageId,
+            teamId: teamId
         };
         $.ajax({
             type: 'POST',
@@ -43,7 +47,7 @@ class PopoverBtn {
                 $("body").off('click', '#updateContentBtn')
             }
         });
-        return  new PopoverBtn(newId, newContent, this.left, this.top, this.width, this.height, pageId)
+        return  new PopoverBtn(newId, newContent, this.left, this.top, this.width, this.height, pageId, teamId)
     }
 
     updatePos(newLeft, newTop){
@@ -55,21 +59,11 @@ class PopoverBtn {
         this.height = newHeight;
     }
 
-
     addToDatabase (){
-        var obj = {
-            id: this.btnId,
-            content: this.content,
-            left: this.left,
-            top: this.top,
-            width: this.width,
-            height: this.height,
-            pageId: this.pageId
-        };
         $.ajax({
             type: 'POST',
             url: "/add-button",
-            data: JSON.stringify(obj),
+            data: JSON.stringify(this),
             async: 'asynchronous',
             success: function (response) {
                 $.snackbar({content: "New button has been successfully added", style:"snackbar-style"});

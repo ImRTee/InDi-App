@@ -21,7 +21,32 @@ db = Database()
 
 @app.route('/')
 def home():
-    return  render_template('index.html')
+    teams = getTeamsandPages()
+    return  render_template('index.html', teams = teams )
+
+
+@app.route('/<string:teamId>')
+def displayTeam(teamId):
+    teams = getTeamsandPages()
+    return render_template('team.html', teamId=teamId, teams = teams)
+
+@app.route('/<string:teamId>/<string:pageId>')
+def displayPage(pageId, teamId):
+    conn = sqlite3.connect(db.mainDataBasePath)
+    c = conn.cursor()
+    c.execute("""SELECT  *
+                                    FROM Page 
+                                    WHERE pageId = ? and teamId = ?""", (pageId, teamId) )
+    results = c.fetchall()
+    pageData = {
+        'pageId': results[0][0],
+        'projectName': results[0][1],
+        'pageLink': results[0][2],
+        'teamId': results[0][3],
+        'imagePath': results[0][4]
+    }
+    teams = getTeamsandPages()
+    return  render_template('page.html', teams = teams, pageData = pageData)
 
 @app.route('/get-pageTable', methods=['GET'])
 def getPageTable():
@@ -33,16 +58,35 @@ def getPageTable():
     result = c.fetchall()
     return jsonify(result)
 
+@app.route('/get-teams', methods=['GET'])
+def getTeams():
+    conn = sqlite3.connect(db.mainDataBasePath)
+    c = conn.cursor()
+    c.execute("""SELECT  *  
+                            from Team 
+                            """)
+    result = c.fetchall()
+    return jsonify(result)
+
 @app.route('/add-page', methods=['POST'])
 def addPage():
     data = request.get_json('pageObj')
     pageId = data['pageId']
     projectName = data['projectName']
-    teamName = data['teamName']
-    confluenceLink = data['confluenceLink']
+    pageLink = data['pageLink']
+    teamId = data['teamId']
     imagePath = data['imagePath']
-    db.insertPage(pageId, projectName, teamName, confluenceLink, imagePath)
+    print('pageLink', pageLink)
+    db.insertPage(pageId, projectName, pageLink, teamId, imagePath)
     return 'Page successfully added'
+
+@app.route('/add-team', methods=['POST'])
+def addTeam():
+    data = request.get_json('pageObj')
+    teamId = data['teamId']
+    confluenceLink = data['confluenceLink']
+    db.insertTeam(teamId, confluenceLink)
+    return 'Team.js successfully added'
 
 @app.route('/delete-page', methods=['POST'])
 def deletePage():
@@ -54,7 +98,8 @@ def deletePage():
 # Source: https://stackoverflow.com/questions/44926465/upload-image-in-flask
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    pageId = request.args.get('pageId');
+    teamId = request.args.get('teamId')
+    pageId = request.args.get('pageId')
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -73,8 +118,8 @@ def upload_file():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             # Update image path in the database
-            db.updateImgPath('../static/images/' + filename, pageId)
-            return  redirect('/')
+            db.updateImgPath('../static/images/' + filename, teamId, pageId)
+            return  redirect('/'+ teamId + '/' + pageId)
     return  ''
 
 @app.route('/uploads/<filename>')
@@ -105,14 +150,15 @@ def updateSize():
 @app.route('/add-button', methods=['POST'])
 def addButton():
     btnObj = request.get_json('btnObj')
-    btnId = btnObj['id']
+    btnId = btnObj['btnId']
     content = btnObj['content']
     left = btnObj['left']
     top = btnObj['top']
     width = btnObj['width']
     height = btnObj['height']
     pageId = btnObj['pageId']
-    db.insertButton(btnId, content, left, top, width, height, pageId)
+    teamId = btnObj['teamId']
+    db.insertButton(btnId, content, left, top, width, height, pageId, teamId)
     return 'Button added to the database'
 
 @app.route('/updateContent-content', methods=['POST'])
@@ -121,7 +167,9 @@ def updateContent():
     originId = data['originId']
     newId = data['newId']
     newContent = data['newContent']
-    db.updateContent(originId, newId, newContent)
+    pageId = data['pageId']
+    teamId = data['teamId']
+    db.updateContent(originId, newId, newContent, pageId, teamId)
     return ''
 
 
@@ -134,26 +182,65 @@ def getImagePath():
     result = c.fetchall()
     return jsonify(result)
 
-@app.route('/get-popover-buttons', methods=['POST'])
+@app.route('/get-popover-buttons', methods=['GET'])
 def getPopoverBtns():
-    pageId = request.get_json("pageId")
+    pageId = request.args.get("pageId")
+    teamId = request.args.get("teamId")
     conn = sqlite3.connect(db.mainDataBasePath)
     c = conn.cursor()
-    c.execute("SELECT  *  from PopoverBtn WHERE pageId = ?", (pageId, )) #Get all content not image
+    c.execute("SELECT  *  from PopoverBtn WHERE pageId = ? and teamId = ?", (pageId, teamId))
     result = c.fetchall()
     return jsonify(result)
 
 @app.route('/delete-button', methods=['POST'])
 def deleteBtn():
-    id = request.get_json('id')
-    db.deleteBtn(id)
-    return ''
+    btnObj = request.get_json('btnObj')
+    btnId = btnObj['btnId']
+    pageId = btnObj['pageId']
+    teamId = btnObj['teamId']
+    db.deleteBtn(btnId, pageId, teamId)
+    return 'Succesful'
 
 
 # Source: http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def getTeamsandPages():
+    conn = sqlite3.connect(db.mainDataBasePath)
+    c = conn.cursor()
+    c.execute("""SELECT  Team.teamId, Page.pageId
+                                from Team 
+                                INNER JOIN Page ON Team.teamId = Page.teamId
+                                """)
+    results = c.fetchall()
+    # print(result)
+    teams = []
+    for result in results:
+        teamId = result[0]
+        pageId = result[1]
+        newTeam = {
+            'teamId': teamId,
+            'pageId': [pageId]
+        }
+        # If there is no team in the list
+        if len(teams) == 0:
+            teams.append(newTeam)
+        else:
+            isExist = False
+            # Iterate throught the list
+            for team in teams:
+                # if teamId exist and pageId is not in the page list of the team
+                if  teamId  == team['teamId']:
+                    if pageId not in team['pageId']:
+                        isExist = True
+                        team['pageId'].append(pageId)
+            # If the team does not exist
+            if not isExist:
+                teams.append(newTeam)
+    return teams
+
 
 if __name__ == '__main__':
     app.run(debug=True)
