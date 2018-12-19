@@ -3,13 +3,18 @@ body{
     width: 100vw;
     position: relative;
 }
+.team-title-nav.active{
+    background-color:  white !important;
+    color: #3f51b5 !important;
+}
+
 
 /*******Header style**********/
 .header-right{
     position: relative;
 }
 
-#addPage-tool-btn{
+#addPage-tool-btn, #addTeam-tool-btn{
     background: white;
     color: #3f51b5 !important;
 }
@@ -106,7 +111,6 @@ table td, table th{
     cursor: pointer;
 }
 
-
 .box-shadow{
     box-shadow:  0px 5px 11px 0px rgba(0,0,0,0.18), 0px 4px 15px 0px rgba(0,0,0,0.15);
     -webkit-box-shadow: 0 5px 11px 0 rgba(0,0,0,.18),0 4px 15px 0 rgba(0,0,0,.15);
@@ -196,24 +200,33 @@ select {
 .container-fluid{
     padding-left: 0 !important;
 }
+
+/*Sidebar*/
 #sidebar {
-    width: 250px;
+    width: 280px;
     top: 0;
     left: 0;
     min-height: 100vh;
     z-index: 999;
-    background: #7386D5;
+    background: url("https://d3au05mbyompa4.cloudfront.net/images/picture/11512/picturepagenu/NAB-1.jpg");
+    -moz-background: url("https://d3au05mbyompa4.cloudfront.net/images/picture/11512/picturepagenu/NAB-1.jpg");
+    background-size: cover ;
+    background-position:  right center;
     color: #fff;
     transition: all 0.3s;
 }
+#sidebar-overlay{
+    background-color: #3f51b5!important;
+    opacity: 0.9;
+    min-height: 100%;
+}
 
 #sidebar.active {
-    margin-left: -250px;
+    margin-left: -280px;
 }
 
 #sidebar .sidebar-header {
     padding: 20px;
-    background: #6d7fcc;
 }
 
 #sidebar ul.components {
@@ -228,11 +241,12 @@ select {
 
 #sidebar ul li a {
     padding: 10px;
-    font-size: 1.1em;
+    font-size: 1.2em;
     display: block;
+    color: white ;
 }
 #sidebar ul li a:hover {
-    color: #7386D5;
+    color: #3f51b5;
     background: #fff;
 }
 
@@ -241,9 +255,8 @@ select {
     background: #6d7fcc;
 }
 ul ul a {
-    font-size: 0.9em !important;
+    font-size: 1.1em !important;
     padding-left: 30px !important;
-    background: #6d7fcc;
 }
 
 a[data-toggle="collapse"] {
@@ -266,10 +279,8 @@ a[data-toggle="collapse"] {
         margin-left: 0;
     }
 }
-
-
-
-
-
+.team-title{
+    border-right: 2px solid white !important;
+}
 
 

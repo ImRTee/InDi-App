@@ -1,7 +1,8 @@
 class Page{
-    constructor(pageId, projectName, pageLink,teamId, imagePath){
+    constructor(pageId, projectName, projectDescription, pageLink,teamId, imagePath){
         this.pageId = pageId;
         this.projectName = projectName;
+        this.projectDescription = projectDescription;
         this.pageLink = pageLink;
         this.teamId= teamId;
         this.imagePath = imagePath;
@@ -11,10 +12,11 @@ class Page{
         var copyPageId = this.pageId;
         return copyPageId;
     }
-    getTeamName(){
-        var copyTeamName = this.teamName;
-        return copyTeamName;
+    getTeamId(){
+        var copyTeamId = this.teamId;
+        return copyTeamId;
     }
+
     getConfluenceLink() {
         var copyConfluenceLink = this.confluenceLink;
         return copyConfluenceLink;
@@ -36,22 +38,23 @@ class Page{
             }
         });
     }
-    addButton(){
-        if ( $('#contentForm-title').val() == "" || $('#newContent').text() == ""){
-            alert('Please fill out required field(s)')
-        }else {
-            var id = $('#contentForm-title').val().replace(/ /g, "-").replace(/'/g, ''); //replace space with dash (-)
-            //Replace double quote with single quote to avoid format issue when constructing html element when generating button
-            var content = $('#newContent').html().replace(/"/g, " ' ");
-            var newPopoverBtn = new PopoverBtn(id, content, 0, 0, 60, 60, this.pageId, this.teamId );
-            newPopoverBtn.addToDatabase();
-            this.popoverBtns.push(newPopoverBtn);
-            this.updateUI();
-            $('.popover-btn').css('opacity', '0.5');
-            this.draggableInitialize();
-            $('.draggable').draggable('enable'); //Enable
-            $('.draggable').resizable('enable');
-        }
+
+    deletePage(){
+        $.ajax({
+            type: 'POST',
+            url: "/delete-page",
+            data: JSON.stringify({pageId: this.pageId, teamId: this.teamId}),
+            dataType: 'json',
+            async: 'asynchronous',
+            complete: (response) => {
+                window.location.href = `/${this.teamId}`
+            }
+        })
+    }
+
+    addButtonToList(newPopoverBtn){
+        this.popoverBtns.push(newPopoverBtn);
+
     }
     retrieveButtons(){
         //Make sure the list is empty before retrieving buttons into
@@ -112,9 +115,7 @@ class Page{
         var index = this.popoverBtns.indexOf(deletingBtn);
         deletingBtn.deleteBtn();
         this.popoverBtns.splice(index, 1);
-        console.log('after delete: ', this.popoverBtns)
     }
-
     updateUI() {
         $('.popover-btn').remove();
         for (var i = 0; i < this.popoverBtns.length; i++) {
@@ -157,23 +158,25 @@ class Page{
             this.draggableInitialize();
         }
     }
-
     draggableInitialize(){
         //Add class draggable for all children under class main-content
         $('.main-content > div').addClass('draggable');
         // Initialize and configure draggable function After every drag event: the id, positions[top,left] are written to btnPositions table
         $('.draggable').draggable({
             stop: (event, ui) => {
-                var btnObj = {};
-                btnObj['id'] = ui.helper[0].id;
-                btnObj['position'] = ui.position;
+                var btnObj = {
+                    'btnId':  ui.helper[0].id,
+                    'position': ui.position,
+                    'pageId': this.pageId,
+                    'teamId': this.teamId
+                };
                 $.ajax({
                     type: 'POST',
                     url: "/updateContent-position",
                     data: JSON.stringify(btnObj),
                     async: 'asynchronous',
                     success: (response) => {
-                        var updatingBtn = this.popoverBtns.find((button)=> {return button.getBtnId() == btnObj['id']});
+                        var updatingBtn = this.popoverBtns.find((button)=> {return button.getBtnId() == btnObj['btnId']});
                         var newLeft = btnObj['position']['left'];
                         var newTop = btnObj['position']['top'];
                         updatingBtn.updatePos(newLeft, newTop);
@@ -190,9 +193,12 @@ class Page{
             ghost: true,
             stop: (event, ui)=>{
                 setTimeout(() => {
-                    var sizeObj = {};
-                    sizeObj['id'] = ui.element[0].id ;
-                    sizeObj['size'] = ui.size;
+                    var sizeObj = {
+                        'btnId': ui.element[0].id,
+                        'size': ui.size,
+                        'pageId': this.pageId,
+                        'teamId': this.teamId
+                    };
                     $.ajax({
                         type: 'POST',
                         url: "/updateContent-size",
@@ -200,7 +206,7 @@ class Page{
                         async: 'asynchronous',
                         success:  (response) => {
                             var updatingBtn = this.popoverBtns.find((button)=> {
-                                return button.getBtnId() == sizeObj['id']
+                                return button.getBtnId() == sizeObj['btnId']
                             });
                             var newWidth = sizeObj['size']['width'];
                             var newHeight = sizeObj['size']['height'];

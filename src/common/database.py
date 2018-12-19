@@ -24,10 +24,10 @@ class Database():
         conn.commit()
         conn.close()
 
-    def insertPage(self, pageId, projectName, pageLink, teamId,  imagePath):
+    def insertPage(self, pageId, projectName,  projectDescription, pageLink, teamId, imagePath):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
-        c.execute("INSERT INTO Page VALUES (?,?,?,?,?)", (pageId, projectName, pageLink, teamId, imagePath))
+        c.execute("INSERT INTO Page VALUES (?,?,?, ?,?,?)", (pageId, projectName, projectDescription, pageLink, teamId, imagePath))
         conn.commit()
         conn.close()
 
@@ -38,11 +38,19 @@ class Database():
         conn.commit()
         conn.close()
 
-    def deletePage(self, pageId):
+    def deleteTeam(self,  teamId):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
-        c.execute("DELETE FROM Page WHERE  pageId = ?", (pageId, ))
-        c.execute("DELETE FROM PopoverBtn WHERE  pageId = ?", (pageId, ))
+        c.execute("DELETE FROM Team WHERE  teamId = ? ", (teamId, ))
+        c.execute("DELETE FROM Page WHERE  teamId = ?", (teamId, ))
+        conn.commit()
+        conn.close()
+
+    def deletePage(self, pageId, teamId):
+        conn = sqlite3.connect(self.mainDataBasePath)
+        c = conn.cursor()
+        c.execute("DELETE FROM Page WHERE  pageId = ? and teamId = ?", (pageId, teamId))
+        c.execute("DELETE FROM PopoverBtn WHERE  pageId = ? and teamId = ?", (pageId, teamId ))
         conn.commit()
         conn.close()
 
@@ -56,23 +64,23 @@ class Database():
         conn.commit()
         conn.close()
 
-    def updatePos(self, btnId,  left, top):
+    def updatePos(self, btnId,  left, top, pageId, teamId):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         c.execute("""UPDATE PopoverBtn  
                      SET left = ?,
                            top = ?
-                     WHERE btnId = ? """, (left, top, btnId))
+                     WHERE btnId = ? and pageId = ? and teamId = ? """, (left, top, btnId, pageId, teamId))
         conn.commit()
         conn.close()
 
-    def updateSize(self, btnId,  width, height):
+    def updateSize(self, btnId,  width, height, pageId, teamId):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         c.execute("""UPDATE PopoverBtn  
                      SET width = ?,
                            height = ?
-                     WHERE btnId = ? """, (width, height, btnId))
+                     WHERE btnId = ? and pageId = ? and teamId = ?""", (width, height, btnId, pageId, teamId))
         conn.commit()
         conn.close()
 
@@ -92,10 +100,12 @@ class Database():
         c = conn.cursor()
         c.execute("""CREATE TABLE Page (
                     pageId text NOT NULL, 
-                    projectName text,
-                    pageLink text,
-                    teamId text, 
-                    imagePath text
+                    projectName text NOT NULL,
+                    projectDescription text NOT NULL,
+                    pageLink text NOT NULL,
+                    teamId text NOT NULL, 
+                    imagePath text NOT NULL,
+                    PRIMARY KEY(`pageId`,`teamId`)
                 )""")
         print("Page Table Created")
 
@@ -103,14 +113,15 @@ class Database():
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         c.execute("""CREATE TABLE PopoverBtn (
-                    btnId text NOT NULL UNIQUE, 
+                    btnId text NOT NULL,  
                     content text ,
                     left real,
                     top real,
                     width integer,
                     height integer,
                     pageId text,
-                    teamId text
+                    teamId text,
+                    PRIMARY KEY(`btnId`,`pageId`,`teamId`)
                 )""")
         print("PopoverBtn Table Created")
 

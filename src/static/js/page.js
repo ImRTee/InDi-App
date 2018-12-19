@@ -1,52 +1,24 @@
 $(document).ready(function(){
+    //Active nav item effect
+    var fullpath =  window.location.pathname.split('/');
+    var lastPath = fullpath[fullpath.length -1];
+    $(`.${lastPath}`).addClass('active');
+
     var pageService = new PageService();
     currentPage.getImage();
     currentPage.retrieveButtons();
-    // $.ajax({
-    //     type: 'GET',
-    //     url: "/get-pageTable",
-    //     async: 'synchronous',
-    //     success: function(response) {
-    //         //response format
-    //         // [
-    //         //     [
-    //         //         pageId, projectName, teamName, confluenceLink, imagePath
-    //         //     ]
-    //         // ]
-    //         //If there is no page
-    //         if (response.length == 0) {
-    //         }
-    //     }
+
+    // //Switch page mechanism
+    // $('#nav-list').on('click', '.nav-item', function(){
+    //     //Clear the DOM
+    //     $('.popover-btn').popover('hide');
+    //     //Hide all popover
+    //     var index = Number($(this).attr('class')[0]);
+    //     pageService.setUpPage(index);
+    //     currentPage = pageService.getCurrentPage();
     // });
 
-    //Switch page mechanism
-    $('#nav-list').on('click', '.nav-item', function(){
-        //Clear the DOM
-        $('.popover-btn').popover('hide');
-        //Hide all popover
-        var index = Number($(this).attr('class')[0]);
-        pageService.setUpPage(index);
-        currentPage = pageService.getCurrentPage();
-    });
 
-    $('#addPage-tool-btn').click(function () {
-        $('.popover-btn').popover('hide');
-        $("#addPageForm-container").css('display', 'block')
-    });
-    //Adding page mechanism
-    $('#addPage-btn').click( (e) => {
-        e.preventDefault();
-        var newPageId = $('#newPage-title').val().replace(/ /g, '-');
-        var newPagePN = $('#newPage-projectName').val();
-        var newPageLink = $('#newPage-link').val();
-        var newPageTeamId = teamId;
-        if ( newPageId ==""|| newPagePN =="" || newPagePN == " " ){
-            alert('Please fill out all fields')
-        }else {
-            var newPage = new Page(newPageId, newPagePN,  newPageTN, pageService.getDefaultImagePath());
-            pageService.addPageToDatabase(newPage)
-        }
-    });
 
     //When the edit mode button is clicked,
     $('#mode-btn').click(  ()=>{
@@ -93,6 +65,7 @@ $(document).ready(function(){
     //This let the backend know which page this picture belongs to
     $('#upload-form').submit(function(){
         var currentPageId = currentPage.getPageId() ;
+        var teamId = currentPage. getTeamId();
         this.action = `/upload?pageId=${currentPageId}&teamId=${teamId}`;
         this.method = 'post'
     });
@@ -101,14 +74,30 @@ $(document).ready(function(){
     //Add button mechanism
     $('#addContentBtn').on('click', function (e){
         e.preventDefault();
-        currentPage.addButton(teamId);
+        if ( $('#contentForm-title').val() == "" || $('#newContent').text() == ""){
+            alert('Please fill out required field(s)')
+        }else {
+            var id = $('#contentForm-title').val().replace(/ /g, "-").replace(/'/g, ''); //replace space with dash (-)
+            //Replace double quote with single quote to avoid format issue when constructing html element when generating button
+            var content = $('#newContent').html().replace(/"/g, " ' ");
+            var newPopoverBtn = new PopoverBtn(id, content, 0, 0, 60, 60, currentPage.getPageId(), currentPage.getTeamId() );
+            newPopoverBtn.addToDatabase();
+            currentPage.addButtonToList(newPopoverBtn);
+            currentPage.updateUI();
+            $('.popover-btn').css('opacity', '0.5');
+            currentPage.draggableInitialize();
+            $('.draggable').draggable('enable'); //Enable
+            $('.draggable').resizable('enable');
+        }
     });
     //End of adding buttons mechanism
 
     //Delete page mechanism
     $('#deletePageBtn').click(function () {
         if ( confirm('Are you sure that you want to delete this page?')){
-            pageService.deletePage();
+            // pageId = currentPage.getPageId();
+            // teamId = currentPage.getTeamId();
+            currentPage.deletePage();
         }
     });
     //End of deleting page mechanism

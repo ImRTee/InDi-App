@@ -1,9 +1,4 @@
-//Things to fix:
-//No special character in button's title field ( ', ? )
-//Page name needs to be unique
-//Adjust classes for popover buttons
-//Put classes into a separate folder in js folder
-//Test deleting button that has the same title in two pages
+
 var teamService = new TeamService();
 var pageService = new PageService();
 // $.ajax({
@@ -19,17 +14,18 @@ var pageService = new PageService();
 //         // ]
 //         //If there is no team
         if (teams.length == 0) {
-            var teamId= prompt('Welcome to InDi App, may I ask your team name please?').replace(/ /g, '-');
-            var confluenceLink = prompt("What is the confluence link you want to attach to this page?");
-            var pageId = prompt("Thank you! Let's create the first page for you. What do you want to name it? ").replace(/ /g, '-');
-            var projectName = prompt("Great! What is the name of the project/application you want to use me to document? ");
-            var pageLink = prompt('Sweet! What is the link for this page?');
+            var teamId= prompt('Welcome to InD App! You seems to be first to arrive here. May I know your team name please?').toLowerCase().replace(/ /g, '-');
+            var confluenceLink = prompt("What is your team's confluence space link? (start with 'https://')");
+            var pageId = prompt("Thank you! Let's create the first page for you. What do you want to name it? ").toLowerCase().replace(/ /g, '-');
+            var projectName = prompt("Great! What is the name of the project/application for this page?");
+            var projectDescription = prompt("Fantastic! Describe this project.");
+            var pageLink = prompt('Sweet! What is the confluence link for this page?');
             var imagePath = pageService.getDefaultImagePath();
 
             var newTeam = new Team(teamId, confluenceLink);
-            var newPage = new Page(pageId, projectName, pageLink, teamId, imagePath);
+            var newPage = new Page(pageId, projectName, projectDescription, pageLink, teamId, imagePath);
             //add to the page list in PageService.js
-            teamService.addTeamToDatabase(newTeam);
+            newTeam.addTeamToDatabase();
             pageService.addPageToDatabase(newPage);
             //If there is at least one page, get the first one to display
         } else {
@@ -58,8 +54,29 @@ var pageService = new PageService();
     }
 // });
 $(document).ready(function () {
-
     $('#sidebarCollapse').on('click', function () {
         $('#sidebar').toggleClass('active');
     });
+
+    //Add team mechanism
+    $('#addTeam-btn').click(function (e) {
+        e.preventDefault();
+        var teamId = $('#newTeam-title').val().toLowerCase().replace(/ /g, '-');
+        var confluenceLink = $('#newTeam-confluenceLink').val() ;
+        var pageId = $('#newTeam-pageTitle').val().toLowerCase().replace(/ /g, '-');
+        var projectName = $('#newTeam-projectName').val();
+        var projectDescription = $('#newTeam-projectDescription').val();
+        var pageLink = $('#newTeam-pageLink').val();
+        var imagePath = pageService.getDefaultImagePath();
+        if ( teamId == "" || confluenceLink == "" ||  pageId == "" || projectName == "" || projectDescription == "" || pageLink == ""){
+            alert('Please fill out all fields')
+        } else {
+            var newTeam = new Team(teamId, confluenceLink);
+            var newPage = new Page(pageId, projectName, projectDescription, pageLink, teamId, imagePath);
+            newTeam.addTeamToDatabase();
+            pageService.addPageToDatabase(newPage);
+
+        }
+    });
+
 });

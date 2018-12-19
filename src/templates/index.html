@@ -52,49 +52,134 @@
             <script src="{{url_for('static', filename='js/models/PopoverBtn.js')}}"></script>
             <script src="{{url_for('static', filename='js/models/Page.js')}}"></script>
 
-
             <script>
                 var teams = '{{ teams|tojson }}';
                 teams = JSON.parse(teams);
+                console.log(teams)
             </script>
         </head>
 
-        <body onload="initDoc()">
-        <!--Sidenav-->
+        <body >
         <div class="wrapper">
             <!-- Sidebar -->
             <nav id="sidebar">
-                <div class="sidebar-header">
+                <div id="sidebar-overlay">
+                    <!--Sidebar header-->
+                <div class="sidebar-header text-center">
                     <a href="/">
-                        <img class="img-fluid"  src="../static/images/logo.jpg " />
+                        <img class="img-fluid rounded-circle"  src="../static/images/logo.jpg " />
                     </a>
+                    <button id="addTeam-tool-btn" class=" btn mt-3" data-toggle="modal" data-target="#addTeamModal">
+                        <strong>Add Team</strong>
+                    </button>
                 </div>
+                    <!--Sidebar body-->
                 <ul class="list-unstyled components">
                     {%   for team in teams %}
                     <li class="active">
-                         <a href="#{{team['teamId']}}" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">{{team['teamId'].replace('-', ' ')}}</a>
+                         <a href="#{{team['teamId']}}" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">{{team['teamId'].replace('-', ' ').upper()}}</a>
                         <ul class="collapse list-unstyled" id="{{team['teamId']}}">
                             {%  for pageId in team['pageId'] %}
                             <li>
-                                <a href="/{{team['teamId']}}/{{pageId}}">{{pageId.replace('-',' ')}}</a>
+                                <a href="/{{team['teamId']}}/{{pageId}}">{{pageId.replace('-',' ').title()}}</a>
                             </li>
                             {% endfor %}
                         </ul>
                     </li>
                     {% endfor %}
                 </ul>
+                </div>
             </nav>
-            <div id="content " class="container-fluid">
-                {% block content %}
-                <button type="button" id="sidebarCollapse" class="btn btn-info mr-5">
-                    <i class="fas fa-align-left"></i>
-                    <span></span>
-                </button>
-                <h1 class="text-center">Home page</h1>
-                {% endblock %}
+            <!--Add  Team form-->
+            <div class="modal fade" id="addTeamModal" tabindex="-1" role="dialog" aria-labelledby="addTeamModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background: #3f51b5; color: white">
+                            <h5 class="modal-title" id="addTeamModalLabel"><strong>Add Team Form</strong></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="text-center" style="color: #757575;">
+
+                                <div class="md-form mt-3">
+                                    <input type="text" id="newTeam-title" class="form-control">
+                                    <label for="newTeam-title">Team name</label>
+                                </div>
+                                <div class="md-form">
+                                    <input type="text" id="newTeam-confluenceLink" class="form-control">
+                                    <label for="newTeam-confluenceLink">Confluence link</label>
+                                </div>
+                                <div class="md-form">
+                                    <input type="text" id="newTeam-pageTitle" class="form-control">
+                                    <label for="newTeam-pageTitle">Page title</label>
+                                </div>
+                                <div class="md-form">
+                                    <input type="text" id="newTeam-projectName" class="form-control">
+                                    <label for="newTeam-projectName">Project name </label>
+                                </div>
+                                <div class="md-form">
+                                    <input type="text" id="newTeam-projectDescription" class="form-control">
+                                    <label for="newTeam-projectDescription">Project Description </label>
+                                </div>
+                                <div class="md-form">
+                                    <input type="text" id="newTeam-pageLink" class="form-control">
+                                    <label for="newTeam-pageLink">Confluence link for page</label>
+                                </div>
+                                <button id="addTeam-btn" class="btn btn-rounded btn-block z-depth-0 my-4 waves-effect" style="background: #3f51b5 ">
+                                    Add
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-        </div>
+            <!--Content-->
+            <div id="content " class="container-fluid">
+                    {% block content %}
+                    <!--Top Nav-->
+                    <nav class="navbar navbar-expand-lg navbar-dark indigo text-center px-5">
+                        <!--Toggle sidebar button-->
+                        <button type="button" id="sidebarCollapse" class="btn btn-info mr-5">
+                            <i class="fas fa-align-left"></i>
+                            <span></span>
+                        </button>
+                        <h1 class=" white-text"> Home </h1>
+                    </nav>
+                    <div id ="home-content" class="p-5">
+                        <h2 class="text-center"><strong>List of teams</strong></h2>
+                        <ul id="teamList" class="row ">
+                            {% for team in teams %}
+                            <div class="col-sm-6 col-md-4 mt-3">
+                            <!-- Card -->
+                                <div class="card">
+                                    <!-- Card image -->
+                                    <img class="card-img-top"  src="../static/images/nab-logo.png" height="188">
+                                    <!-- Card content -->
+                                    <div class="card-body">
+                                        <!-- Title -->
+                                        <h4 class="card-title"><a>{{ team['teamId'].upper().replace('-', ' ')}}</a></h4>
+                                        <!-- Text -->
+                                        <ul class="list-group mb-2">
+                                            {% for pageId in team['pageId'] %}
+                                            <a href="/{{team['teamId']}}/{{pageId}}"><li class="list-group-item">{{pageId.replace('-', ' ')}}</li></a>
+                                            {% endfor %}
+                                        </ul>
+                                        <!-- Button -->
+                                        <a href="/{{team['teamId']}}" class="btn btn-primary">View team</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endblock %}
+
+                </div>
+            </div>
+
 
 
             <!--Snackbar reference-->

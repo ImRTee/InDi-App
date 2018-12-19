@@ -27,8 +27,10 @@ def home():
 
 @app.route('/<string:teamId>')
 def displayTeam(teamId):
+    #Get this for sidebar
     teams = getTeamsandPages()
-    return render_template('team.html', teamId=teamId, teams = teams)
+    teamDetails = getTeamDetails(teamId)
+    return render_template('team.html', teamDetails=teamDetails, teams=teams)
 
 @app.route('/<string:teamId>/<string:pageId>')
 def displayPage(pageId, teamId):
@@ -36,17 +38,19 @@ def displayPage(pageId, teamId):
     c = conn.cursor()
     c.execute("""SELECT  *
                                     FROM Page 
-                                    WHERE pageId = ? and teamId = ?""", (pageId, teamId) )
+                                    WHERE pageId = ? and teamId = ?""", (pageId, teamId))
     results = c.fetchall()
     pageData = {
         'pageId': results[0][0],
         'projectName': results[0][1],
-        'pageLink': results[0][2],
-        'teamId': results[0][3],
-        'imagePath': results[0][4]
+        'projectDescription': results[0][2],
+        'pageLink': results[0][3],
+        'teamId': results[0][4],
+        'imagePath': results[0][5]
     }
     teams = getTeamsandPages()
-    return  render_template('page.html', teams = teams, pageData = pageData)
+    teamDetails = getTeamDetails(teamId);
+    return  render_template('page.html', teams=teams, pageData=pageData, teamDetails=teamDetails)
 
 @app.route('/get-pageTable', methods=['GET'])
 def getPageTable():
@@ -71,13 +75,14 @@ def getTeams():
 @app.route('/add-page', methods=['POST'])
 def addPage():
     data = request.get_json('pageObj')
+    print("pageObj", data)
     pageId = data['pageId']
     projectName = data['projectName']
+    projectDescription = data['projectDescription']
     pageLink = data['pageLink']
     teamId = data['teamId']
     imagePath = data['imagePath']
-    print('pageLink', pageLink)
-    db.insertPage(pageId, projectName, pageLink, teamId, imagePath)
+    db.insertPage(pageId, projectName, projectDescription, pageLink, teamId, imagePath)
     return 'Page successfully added'
 
 @app.route('/add-team', methods=['POST'])
@@ -88,10 +93,18 @@ def addTeam():
     db.insertTeam(teamId, confluenceLink)
     return 'Team.js successfully added'
 
+@app.route('/delete-team', methods=['POST'])
+def deleteTeam():
+    teamId = request.get_json('teamId')
+    db.deleteTeam(teamId)
+    return 'Team.js successfully added'
+
 @app.route('/delete-page', methods=['POST'])
 def deletePage():
-    pageId = request.get_json('PageId')
-    db.deletePage(pageId)
+    data = request.get_json('data')
+    pageId = data['pageId']
+    teamId = data['teamId']
+    db.deletePage(pageId, teamId)
     return 'Page successfully deleted'
 
 
@@ -130,20 +143,23 @@ def uploaded_file(filename):
 @app.route('/updateContent-position', methods=['POST'])
 def updatePosition():
     data = request.get_json('obj')
-    id = data['id']
+    btnId = data['btnId']
     left = data['position']['left']
     top = data ['position']['top']
-    db.updatePos(id, left, top)
+    pageId = data['pageId']
+    teamId = data['teamId']
+    db.updatePos(btnId, left, top, pageId, teamId)
     return 'Position successfully updated'
 
 @app.route('/updateContent-size', methods=['POST'])
 def updateSize():
     data = request.get_json('sizeObj')
-    print(data)
-    id = data['id']
+    btnId = data['btnId']
     width = data['size']['width']
     height = data['size']['height']
-    db.updateSize(id, width, height)
+    pageId = data['pageId']
+    teamId = data['teamId']
+    db.updateSize(btnId, width, height, pageId, teamId)
     return 'Size successfully updated'
 
 
@@ -215,7 +231,6 @@ def getTeamsandPages():
                                 INNER JOIN Page ON Team.teamId = Page.teamId
                                 """)
     results = c.fetchall()
-    # print(result)
     teams = []
     for result in results:
         teamId = result[0]
@@ -240,6 +255,40 @@ def getTeamsandPages():
             if not isExist:
                 teams.append(newTeam)
     return teams
+
+def getTeamDetails(teamId):
+    conn = sqlite3.connect(db.mainDataBasePath)
+    c = conn.cursor()
+    c.execute(""" SELECT Team.teamId, Team.confluenceLink, Page.pageId, Page.projectName, Page.projectDescription, Page.pageLink, Page.imagePath
+                            FROM Team
+                            INNER  JOIN Page ON Team.teamId = Page.teamId
+                            WHERE Team.teamId = ?
+                    """, (teamId, ))
+    results = c.fetchall()
+    teamDetails = {
+        'teamId': teamId,
+        'confluenceLink':  results[0][1],
+        'pages':[]
+    }
+    for team in results:
+        pageId = team[2]
+        projectName = team[3]
+        projectDescription = team[4]
+        pageLink = team[5]
+        imagePath = team[6]
+        page = {
+            'pageId': pageId,
+            'projectName':projectName,
+            'projectDescription': projectDescription,
+            'pageLink':  pageLink,
+            'imagePath': imagePath
+        }
+        teamDetails['pages'].append(page)
+    conn.commit()
+    conn.close()
+    return teamDetails
+
+
 
 
 if __name__ == '__main__':
