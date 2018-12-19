@@ -38,6 +38,22 @@ class Page{
             }
         });
     }
+    addPageToDatabase(){
+        $.ajax({
+            type: 'POST',
+            url: "/add-page",
+            data: JSON.stringify(this),
+            async: 'asynchronous',
+            success:  (response)  => {
+                if (response == 'existed'){
+                    alert('Not successful. A page with the same name is existed in this team.');
+                }else {
+                    alert('A new page has been successfully added');
+                    window.location.href = `/${this.getTeamId()}`
+                }
+            }
+        })
+    }
 
     deletePage(){
         $.ajax({
@@ -100,15 +116,11 @@ class Page{
     updateBtnContent(originId, newId, newContent){
         var updatingBtn = this.popoverBtns.find((button)=>{ return button['btnId']== originId });
         var indexOfUpdatingBtn = this.popoverBtns.indexOf(updatingBtn);
-        var updatedBtn = updatingBtn.updateContent(newId , newContent, this.pageId, this.teamId);
-        this.updateButton(updatedBtn, indexOfUpdatingBtn);
+        updatingBtn.updateContent(newId , newContent, indexOfUpdatingBtn, this);
     }
-    updateButton(updatedBtn, index){
+    updateButtonInList(updatedBtn, index){
         this.popoverBtns[index] = updatedBtn;
         console.log('button list  after updated ', this.popoverBtns);
-        this.updateUI();
-        $('.popover-btn').css('opacity', '0.5');
-        this.draggableInitialize();
     }
     deleteBtn(btnId){
         var deletingBtn = this.popoverBtns.find((button)=>{ return button['btnId']== btnId && button['pageId'] == this.pageId && button['teamId'] == this.teamId });
@@ -153,7 +165,6 @@ class Page{
         }
         //If in edit mode, show buttons
         if ($('#mode-btn').text() == 'Display'){
-            console.log('what?')
             $('.popover-btn').css('opacity', '0.5');
             this.draggableInitialize();
         }

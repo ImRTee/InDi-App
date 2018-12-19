@@ -82,16 +82,16 @@ def addPage():
     pageLink = data['pageLink']
     teamId = data['teamId']
     imagePath = data['imagePath']
-    db.insertPage(pageId, projectName, projectDescription, pageLink, teamId, imagePath)
-    return 'Page successfully added'
+    result = db.insertPage(pageId, projectName, projectDescription, pageLink, teamId, imagePath)
+    return result
 
 @app.route('/add-team', methods=['POST'])
 def addTeam():
     data = request.get_json('pageObj')
     teamId = data['teamId']
     confluenceLink = data['confluenceLink']
-    db.insertTeam(teamId, confluenceLink)
-    return 'Team.js successfully added'
+    result = db.insertTeam(teamId, confluenceLink)
+    return result
 
 @app.route('/delete-team', methods=['POST'])
 def deleteTeam():
@@ -174,8 +174,8 @@ def addButton():
     height = btnObj['height']
     pageId = btnObj['pageId']
     teamId = btnObj['teamId']
-    db.insertButton(btnId, content, left, top, width, height, pageId, teamId)
-    return 'Button added to the database'
+    result = db.insertButton(btnId, content, left, top, width, height, pageId, teamId)
+    return result
 
 @app.route('/updateContent-content', methods=['POST'])
 def updateContent():
@@ -185,8 +185,8 @@ def updateContent():
     newContent = data['newContent']
     pageId = data['pageId']
     teamId = data['teamId']
-    db.updateContent(originId, newId, newContent, pageId, teamId)
-    return ''
+    result = db.updateContent(originId, newId, newContent, pageId, teamId)
+    return  result
 
 
 @app.route('/get-image')

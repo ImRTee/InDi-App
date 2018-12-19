@@ -8,15 +8,19 @@ class Team{
         return copyTeamId
     }
 
-    addTeamToDatabase() {
+    addTeamToDatabase(newPage) {
         $.ajax({
             type: 'POST',
             url: "/add-team",
             data: JSON.stringify(this),
             async: 'asynchronous',
             success: function (response) {
-                alert('A new team has been successfully added');
-                window.location.href = "/"
+                if (response == 'existed'){
+                    alert('Not successful. This team already exists.');
+                }else{
+                    alert('A new team has been successfully added');
+                    newPage.addPageToDatabase();
+                }
             }
         })
     }
@@ -28,7 +32,7 @@ class Team{
             data: JSON.stringify(this.teamId),
             async: 'asynchronous',
             success: function (response) {
-                alert('A new team has been successfully deleted');
+                alert('Team has been successfully deleted');
                 window.location.href = "/"
             }
         })

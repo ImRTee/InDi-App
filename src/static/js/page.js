@@ -76,18 +76,14 @@ $(document).ready(function(){
         e.preventDefault();
         if ( $('#contentForm-title').val() == "" || $('#newContent').text() == ""){
             alert('Please fill out required field(s)')
-        }else {
-            var id = $('#contentForm-title').val().replace(/ /g, "-").replace(/'/g, ''); //replace space with dash (-)
+        } else if (isStringInvalid($('#contentForm-title').val() )){
+            alert('Invalid character. ')
+        } else {
+            var btnId = $('#contentForm-title').val().replace(/ /g, "-").replace(/'/g, ''); //replace space with dash (-)
             //Replace double quote with single quote to avoid format issue when constructing html element when generating button
             var content = $('#newContent').html().replace(/"/g, " ' ");
-            var newPopoverBtn = new PopoverBtn(id, content, 0, 0, 60, 60, currentPage.getPageId(), currentPage.getTeamId() );
-            newPopoverBtn.addToDatabase();
-            currentPage.addButtonToList(newPopoverBtn);
-            currentPage.updateUI();
-            $('.popover-btn').css('opacity', '0.5');
-            currentPage.draggableInitialize();
-            $('.draggable').draggable('enable'); //Enable
-            $('.draggable').resizable('enable');
+            var newPopoverBtn = new PopoverBtn(btnId, content, 0, 0, 60, 60, currentPage.getPageId(), currentPage.getTeamId() );
+            newPopoverBtn.addToDatabase(currentPage);
         }
     });
     //End of adding buttons mechanism

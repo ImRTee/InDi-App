@@ -25,7 +25,7 @@
         <ul id="nav-list" class=" navbar-nav mr-auto">
             {% for page in teamDetails['pages'] %}
                 <li class="nav-item {{page['pageId']}}">
-                   <a   class="nav-link page-title-nav " style="font-weight: bold" href="/{{teamDetails['teamId']}}/{{page['pageId']}}"> {{page['pageId'].replace('-', ' ')}}<span class="sr-only">(current)</span></a>
+                   <a   class="nav-link page-title-nav " style="font-weight: bold" href="/{{teamDetails['teamId']}}/{{page['pageId']}}"> {{page['pageId'].replace('-', ' ').title()}}<span class="sr-only">(current)</span></a>
                 </li>
             {% endfor %}
         </ul>
@@ -105,9 +105,9 @@
                 <!-- Card content -->
                 <div class="card-body">
                     <!-- Title -->
-                    <h4 class="card-title">{{page['pageId'].replace('-', ' ')}}</h4>
+                    <h4 class="card-title">{{page['pageId'].replace('-', ' ').title()}}</h4>
                     <!-- Text -->
-                    <p class="card-text"><strong>Project name:</strong> {{page['projectName']}}</p>
+                    <p class="card-text"><strong>Project name:</strong> {{page['projectName'].title()}}</p>
                     <p class="card-text"><strong>Project description: </strong>{{page['projectDescription']}}</p>
                     <!-- Button -->
                     <a href="/{{teamDetails['teamId']}}/{{page['pageId']}}" class="btn btn-primary">View page</a>

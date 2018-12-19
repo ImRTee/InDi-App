@@ -18,25 +18,43 @@ class Database():
             # self.insertDefaultImagePath()
 
     def insertButton(self, btnId, content, left, top, width, height, pageId, teamId):
-        conn = sqlite3.connect(self.mainDataBasePath)
-        c = conn.cursor()
-        c.execute("INSERT INTO PopoverBtn  VALUES (?,?,?,?,?,?,?,?)", (btnId, content, left, top, width, height, pageId, teamId))
-        conn.commit()
+        try:
+            conn = sqlite3.connect(self.mainDataBasePath)
+            c = conn.cursor()
+            c.execute("INSERT INTO PopoverBtn  VALUES (?,?,?,?,?,?,?,?)", (btnId, content, left, top, width, height, pageId, teamId))
+            conn.commit()
+        except sqlite3.Error as e:
+            if 'UNIQUE' in e.args[0]:
+                conn.close()
+                return 'existed'
         conn.close()
+        return 'successful'
 
     def insertPage(self, pageId, projectName,  projectDescription, pageLink, teamId, imagePath):
-        conn = sqlite3.connect(self.mainDataBasePath)
-        c = conn.cursor()
-        c.execute("INSERT INTO Page VALUES (?,?,?, ?,?,?)", (pageId, projectName, projectDescription, pageLink, teamId, imagePath))
-        conn.commit()
+        try:
+            conn = sqlite3.connect(self.mainDataBasePath)
+            c = conn.cursor()
+            c.execute("INSERT INTO Page VALUES (?,?,?, ?,?,?)", (pageId, projectName, projectDescription, pageLink, teamId, imagePath))
+            conn.commit()
+        except sqlite3.Error as e:
+            if 'UNIQUE' in e.args[0]:
+                conn.close()
+                return  'existed'
         conn.close()
+        return 'successful'
 
     def insertTeam(self, teamId, confluenceLink):
-        conn = sqlite3.connect(self.mainDataBasePath)
-        c = conn.cursor()
-        c.execute("INSERT INTO Team VALUES (?,?)", (teamId, confluenceLink))
-        conn.commit()
+        try:
+            conn = sqlite3.connect(self.mainDataBasePath)
+            c = conn.cursor()
+            c.execute("INSERT INTO Team VALUES (?,?)", (teamId, confluenceLink))
+            conn.commit()
+        except sqlite3.Error as e:
+            if 'UNIQUE' in  e.args[0]:
+                conn.close()
+                return 'existed'
         conn.close()
+        return 'successful'
 
     def deleteTeam(self,  teamId):
         conn = sqlite3.connect(self.mainDataBasePath)
@@ -49,20 +67,26 @@ class Database():
     def deletePage(self, pageId, teamId):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
-        c.execute("DELETE FROM Page WHERE  pageId = ? and teamId = ?", (pageId, teamId))
+        c.execute("DELETE FROM Page WHERE  pageId = ? and teamId = ? ", (pageId, teamId))
         c.execute("DELETE FROM PopoverBtn WHERE  pageId = ? and teamId = ?", (pageId, teamId ))
         conn.commit()
         conn.close()
 
     def updateContent(self, originId, newId, newContent, pageId, teamId):
-        conn = sqlite3.connect(self.mainDataBasePath)
-        c = conn.cursor()
-        c.execute("""UPDATE PopoverBtn 
+        try:
+            conn = sqlite3.connect(self.mainDataBasePath)
+            c = conn.cursor()
+            c.execute("""UPDATE PopoverBtn 
                      SET btnId = ?,
                            content = ?
                      WHERE btnId = ?  and pageId = ? and teamId = ?""", (newId, newContent, originId, pageId, teamId))
-        conn.commit()
+            conn.commit()
+        except sqlite3.Error as e:
+            if 'UNIQUE' in e.args[0]:
+                conn.close()
+                return  'existed'
         conn.close()
+        return 'successful'
 
     def updatePos(self, btnId,  left, top, pageId, teamId):
         conn = sqlite3.connect(self.mainDataBasePath)
@@ -105,7 +129,7 @@ class Database():
                     pageLink text NOT NULL,
                     teamId text NOT NULL, 
                     imagePath text NOT NULL,
-                    PRIMARY KEY(`pageId`,`teamId`)
+                    PRIMARY KEY(`pageId`, `teamId` )
                 )""")
         print("Page Table Created")
 

@@ -1,7 +1,6 @@
 class  PageService {
     constructor(){
         this. pages = [];
-        this.popOverBtns = [];
         this. currentPage;
     }
 
@@ -23,21 +22,7 @@ class  PageService {
         var copyDefaultImagePath = '../static/images/default-image.png';
         return copyDefaultImagePath;
     }
-    addPageToDatabase(page){
-        $.ajax({
-            type: 'POST',
-            url: "/add-page",
-            data: JSON.stringify(page),
-            async: 'asynchronous',
-            success: function (response) {
-                alert('A new page has been successfully added');
-                window.location.href = `/${page.getTeamId()}`
-            }
-        })
-    }
-    addButtonToList(popoverBtn){
-        this.popOverBtns.push(popoverBtn);
-    }
+
 
     fillUpPageList(page){
         this.pages.push(page)
