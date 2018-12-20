@@ -8,18 +8,6 @@ $(document).ready(function(){
     currentPage.getImage();
     currentPage.retrieveButtons();
 
-    // //Switch page mechanism
-    // $('#nav-list').on('click', '.nav-item', function(){
-    //     //Clear the DOM
-    //     $('.popover-btn').popover('hide');
-    //     //Hide all popover
-    //     var index = Number($(this).attr('class')[0]);
-    //     pageService.setUpPage(index);
-    //     currentPage = pageService.getCurrentPage();
-    // });
-
-
-
     //When the edit mode button is clicked,
     $('#mode-btn').click(  ()=>{
         //If in 'Edit' mode
@@ -90,10 +78,16 @@ $(document).ready(function(){
 
     //Delete page mechanism
     $('#deletePageBtn').click(function () {
-        if ( confirm('Are you sure that you want to delete this page?')){
-            // pageId = currentPage.getPageId();
-            // teamId = currentPage.getTeamId();
-            currentPage.deletePage();
+        var numberOfPagesLeft = teamObj.pages.length;
+        if (numberOfPagesLeft == 1){
+            if (confirm('This is the last page of your team. Deleting this page will result in deleting the team. Do you want to proceed?')){
+                currentPage.deletePage();
+                currentTeam.deleteTeam()
+            }
+        }else {
+            if (confirm('Are you sure that you want to delete this page?')) {
+                currentPage.deletePage();
+            }
         }
     });
     //End of deleting page mechanism

@@ -16,12 +16,12 @@ $(document).ready(function () {
         var newPagePD = $('#newPage-projectDescription').val();
         var newPageLink = $('#newPage-link').val();
         var newPageTeamId = currentTeam.getTeamId();
-        if ( newPageId ==""|| newPagePN =="" || newPagePD == " "||newPageLink == ""){
+        if ( newPageTitle ==""|| newPagePN =="" || newPagePD == " "||newPageLink == ""){
             alert('Please fill out all fields')
         }else if (isStringInvalid( $('#newPage-title').val())){
             alert('Invalid character. ')
-        } else if ( isLinkInvalid(pageLink)) {
-            alert('Link needs to start with either http:// or https://')
+        } else if ( isLinkInvalid(newPageLink)) {
+                alert('Link needs to start with either http:// or https://')
         }else {
             var newPageId = newPagePN + "-" + newPageTitle;
             var newPage = new Page(newPageId, newPagePN, newPagePD,  newPageLink, newPageTeamId, pageService.getDefaultImagePath());

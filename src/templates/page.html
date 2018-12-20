@@ -1,9 +1,10 @@
 {% extends "team.html" %}
 {% block page %}
 <script>
-    // var teamId = '{{teamId}}';
+    var teamDetails = '{{teamDetails | tojson }}';
+    var teamObj = JSON.parse(teamDetails);
+    var currentTeam = new Team(teamObj['teamId'], teamObj['confluenceLink']);
     var pageData = '{{ pageData| tojson}}';
-    console.log('pageData', pageData);
     var pageObj = JSON.parse(pageData);
     var currentPage = new Page(pageObj['pageId'], pageObj['projectName'], pageObj['projectDescription'], pageObj['pageLink'], pageObj['teamId'], pageObj['imagePath'])
 </script>
