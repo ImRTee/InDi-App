@@ -3,22 +3,24 @@
 <script>
     var teamDetails = '{{teamDetails | tojson }}';
     var teamObj = JSON.parse(teamDetails);
-    var currentTeam = new Team(teamObj['teamId'], teamObj['confluenceLink']);
+    var currentTeam = new Team(teamObj['teamId'], teamObj['confluenceLink'], teamObj['imagePath']);
     var pageData = '{{ pageData| tojson}}';
     var pageObj = JSON.parse(pageData);
     var currentPage = new Page(pageObj['pageId'], pageObj['projectName'], pageObj['projectDescription'], pageObj['pageLink'], pageObj['teamId'], pageObj['imagePath'])
 </script>
 <body onload="initDoc()">
 <div  class=" d-flex flex-row">
-    <div class="w-25"></div>
+    <div class="w-25 pl-3 pt-3">
+        <p> <h5 style="color: #3f51b5" ><strong>Project:  </strong>{{pageData['projectName'].title()}} </h5></p>
+        <p><h5  style="color: #3f51b5" id="teamId"><strong>Team: </strong>{{pageData['teamId'].replace('-',' ').upper()}} </h5></p>
+    </div>
     <div class="w-50" >
         <h1 id="page-title"  class="mt-5 text-center" style="font-family: Calibri">
             <a  target="_blank" href="{{pageData['pageLink']}}">
-                {{pageData['pageId'].replace('-', ' ')}}
+                {{pageData['pageId'].replace('-', ' ').title()}}
             </a>
         </h1>
-        <h3 class="text-center">{{pageData['projectName']}} </h3>
-        <center><h4 id="teamId" class="text-center">{{pageData['teamId'].replace('-',' ')}} </h4></center>
+
     </div>
 
     <!--Edit page buttons-->

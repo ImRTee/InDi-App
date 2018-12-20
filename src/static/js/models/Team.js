@@ -1,7 +1,8 @@
 class Team{
-    constructor(teamId, confluenceLink){
+    constructor(teamId, confluenceLink, imagePath){
         this.teamId = teamId;
         this.confluenceLink = confluenceLink;
+        this.imagePath = imagePath;
     }
     getTeamId(){
         var copyTeamId = this.teamId;

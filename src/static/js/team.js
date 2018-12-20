@@ -29,6 +29,14 @@ $(document).ready(function () {
         }
     });
 
+    //This let the backend know which page this picture belongs to
+    $('#upload-team-img-form').submit(function(){
+        var teamId = currentTeam. getTeamId();
+        this.action = `/upload-team-image?teamId=${teamId}`;
+        this.method = 'post'
+    });
+    //End of Upload form mechanism
+
     //Delete page mechanism
     $('#deleteTeam-btn').click(function () {
         if (confirm('Are you sure you want to delete this team?')){

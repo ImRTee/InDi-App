@@ -3,10 +3,20 @@ body{
     width: 100vw;
     position: relative;
 }
+
+/*Team page style*/
 .team-title-nav.active{
     background-color:  white !important;
     color: #3f51b5 !important;
 }
+.upload-teamImg-btn-tool{
+    background-color: white !important;
+    border: 0 white
+}
+.upload-teamImg-btn-tool:focus{
+    outline: none;
+}
+
 
 
 /*******Header style**********/
@@ -214,6 +224,10 @@ select {
     background-position:  right center;
     color: #fff;
     transition: all 0.3s;
+}
+#sidebarCollapse{
+    background-color: white !important;
+    color:#3f51b5 !important;
 }
 #sidebar-overlay{
     background-color: #3f51b5!important;

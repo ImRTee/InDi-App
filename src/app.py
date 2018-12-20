@@ -75,7 +75,6 @@ def getTeams():
 @app.route('/add-page', methods=['POST'])
 def addPage():
     data = request.get_json('pageObj')
-    print("pageObj", data)
     pageId = data['pageId']
     projectName = data['projectName']
     projectDescription = data['projectDescription']
@@ -90,7 +89,8 @@ def addTeam():
     data = request.get_json('pageObj')
     teamId = data['teamId']
     confluenceLink = data['confluenceLink']
-    result = db.insertTeam(teamId, confluenceLink)
+    imagePath = data['imagePath']
+    result = db.insertTeam(teamId, confluenceLink, imagePath)
     return result
 
 @app.route('/delete-team', methods=['POST'])
@@ -109,8 +109,8 @@ def deletePage():
 
 
 # Source: https://stackoverflow.com/questions/44926465/upload-image-in-flask
-@app.route('/upload', methods=['POST'])
-def upload_file():
+@app.route('/upload-diagram', methods=['POST'])
+def upload_diagram():
     teamId = request.args.get('teamId')
     pageId = request.args.get('pageId')
     if request.method == 'POST':
@@ -131,8 +131,33 @@ def upload_file():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             # Update image path in the database
-            db.updateImgPath('../static/images/' + filename, teamId, pageId)
+            db.updateDiagramImgPath('../static/images/' + filename, teamId, pageId)
             return  redirect('/'+ teamId + '/' + pageId)
+    return  ''
+
+@app.route('/upload-team-image', methods=['POST'])
+def upload_team_image():
+    teamId = request.args.get('teamId')
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect('No file part')
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return 'Sorry, please select a file to upload'
+        if not allowed_file(file.filename):
+            flash('No selected file')
+            return 'Incorrect file type. Please only upload .png, .jpg and .jpeg files'
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # Update image path in the database
+            db.updateTeamImgPath('../static/images/' + filename, teamId)
+            return  redirect('/'+ teamId)
     return  ''
 
 @app.route('/uploads/<filename>')
@@ -226,7 +251,7 @@ def allowed_file(filename):
 def getTeamsandPages():
     conn = sqlite3.connect(db.mainDataBasePath)
     c = conn.cursor()
-    c.execute("""SELECT  Team.teamId, Page.pageId
+    c.execute("""SELECT  Team.teamId, Team.imagePath, Page.pageId
                                 from Team 
                                 INNER JOIN Page ON Team.teamId = Page.teamId
                                 """)
@@ -234,9 +259,11 @@ def getTeamsandPages():
     teams = []
     for result in results:
         teamId = result[0]
-        pageId = result[1]
+        teamImgPath = result[1]
+        pageId = result[2]
         newTeam = {
             'teamId': teamId,
+            'imagePath':  teamImgPath,
             'pageId': [pageId]
         }
         # If there is no team in the list
@@ -259,7 +286,7 @@ def getTeamsandPages():
 def getTeamDetails(teamId):
     conn = sqlite3.connect(db.mainDataBasePath)
     c = conn.cursor()
-    c.execute(""" SELECT Team.teamId, Team.confluenceLink, Page.pageId, Page.projectName, Page.projectDescription, Page.pageLink, Page.imagePath
+    c.execute(""" SELECT Team.teamId, Team.confluenceLink, Team.imagePath, Page.pageId, Page.projectName, Page.projectDescription, Page.pageLink, Page.imagePath
                             FROM Team
                             INNER  JOIN Page ON Team.teamId = Page.teamId
                             WHERE Team.teamId = ?
@@ -268,14 +295,15 @@ def getTeamDetails(teamId):
     teamDetails = {
         'teamId': teamId,
         'confluenceLink':  results[0][1],
+        'imagePath': results[0][2],
         'pages':[]
     }
     for team in results:
-        pageId = team[2]
-        projectName = team[3]
-        projectDescription = team[4]
-        pageLink = team[5]
-        imagePath = team[6]
+        pageId = team[3]
+        projectName = team[4]
+        projectDescription = team[5]
+        pageLink = team[6]
+        imagePath = team[7]
         page = {
             'pageId': pageId,
             'projectName':projectName,

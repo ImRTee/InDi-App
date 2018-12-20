@@ -43,11 +43,11 @@ class Database():
         conn.close()
         return 'successful'
 
-    def insertTeam(self, teamId, confluenceLink):
+    def insertTeam(self, teamId, confluenceLink, imagePath):
         try:
             conn = sqlite3.connect(self.mainDataBasePath)
             c = conn.cursor()
-            c.execute("INSERT INTO Team VALUES (?,?)", (teamId, confluenceLink))
+            c.execute("INSERT INTO Team VALUES (?,?, ?)", (teamId, confluenceLink, imagePath))
             conn.commit()
         except sqlite3.Error as e:
             if 'UNIQUE' in  e.args[0]:
@@ -108,12 +108,23 @@ class Database():
         conn.commit()
         conn.close()
 
-    def  updateImgPath(self, path, teamId, pageId):
+    def  updateDiagramImgPath(self, path, teamId, pageId):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         c.execute("""UPDATE Page
                   SET  imagePath =  ?
                    WHERE pageId =? and teamId = ?""", (path, pageId, teamId))
+        print(c.fetchall())
+        conn.commit()
+        conn.close()
+
+
+    def  updateTeamImgPath(self, path, teamId):
+        conn = sqlite3.connect(self.mainDataBasePath)
+        c = conn.cursor()
+        c.execute("""UPDATE Team
+                  SET  imagePath =  ?
+                   WHERE teamId = ?""", (path, teamId))
         print(c.fetchall())
         conn.commit()
         conn.close()
@@ -153,10 +164,12 @@ class Database():
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
         c.execute("""CREATE TABLE Team (
-                    teamId text NOT NULL UNIQUE, 
-                    confluenceLink text
+                    teamId text NOT NULL, 
+                    confluenceLink text NOT NULL,
+                    imagePath text NOT NULL,
+                    PRIMARY KEY(`teamId`)
                 )""")
-        print("PopoverBtn Table Created")
+        print("Team Table Created")
 
     def deleteBtn(self, btnId, pageId, teamId):
         conn = sqlite3.connect(self.mainDataBasePath)

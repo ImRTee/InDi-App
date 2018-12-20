@@ -54,7 +54,7 @@ $(document).ready(function(){
     $('#upload-form').submit(function(){
         var currentPageId = currentPage.getPageId() ;
         var teamId = currentPage. getTeamId();
-        this.action = `/upload?pageId=${currentPageId}&teamId=${teamId}`;
+        this.action = `/upload-diagram?pageId=${currentPageId}&teamId=${teamId}`;
         this.method = 'post'
     });
     //End of Upload form mechanism

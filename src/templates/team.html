@@ -75,21 +75,56 @@
 </div>
 
 {% block page %}
+<!--Team page header-->
 <div class="teamPage-content p-5">
     <div class="teamPage-header row">
         <div class="col-3">
-
+            <button class="upload-teamImg-btn-tool  waves-effect p-3"
+                    data-toggle="modal"  data-target="#uploadTeamImgModal"
+                    data-toggle="tooltip" data-placement="bottom" title="Update team image">
+                <img class="img-fluid  z-depth-2" src="{{teamDetails['imagePath']}}" width="400" height="400">
+            </button>
         </div>
         <div class="col-6">
-            <h1 class="text-center ">{{teamDetails['teamId'].replace('-', ' ' ).upper()}}</h1>
+            <h1 class="text-center "><strong>{{teamDetails['teamId'].replace('-', ' ' ).upper()}}</strong></h1>
             <h4 class="text-center"><a href="{{teamDetails['confluenceLink']}}" target="_blank">Confluence Home</a></h4>
         </div>
         <div class="col-3">
-            <i id="deleteTeam-btn" class="far fa-times-circle fa-2x float-right" style="color: red; cursor:  pointer"   ></i>
+            <i id="deleteTeam-btn" class="fas fa-window-close fa-3x float-right" style="color: red; cursor:  pointer"   ></i>
         </div>
     </div>
 
+    <!--Upload form-->
+    <div class="modal fade" id="uploadTeamImgModal" tabindex="-1" role="dialog" aria-labelledby="uploadTeamImgModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #6a1b9a; color: white">
+                    <h5 class="modal-title" id="uploadTeamImgModalLabel"><strong>Upload Team Image</strong></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="color: white">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="upload-form-container p-3 ">
+                        <form id="upload-team-img-form" enctype="multipart/form-data" >
+                            <div class="upload-content d-flex">
+                                <span class="btn btn-secondary btn-file w-60 " style="padding-top: 19px">
+                                   <input type="file" name="file">
+                                </span>
+                                <button type="submit" class="btn btn-success w-40" style="padding: 21px" >Upload</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!--<div class="modal-footer">-->
+                <!--<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
 
+    <!--List of pages-->
     <div class="page-list row mt-5">
         {% for page in teamDetails['pages']%}
         <!-- Card -->

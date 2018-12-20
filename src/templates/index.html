@@ -61,6 +61,7 @@
         </head>
 
         <body >
+        <!--Wrapper-->
         <div class="wrapper">
             <!-- Sidebar -->
             <nav id="sidebar">
@@ -105,20 +106,20 @@
                             <form class="text-center" style="color: #757575;">
 
                                 <div class="md-form mt-3">
-                                    <input type="text" id="newTeam-title" class="form-control">
-                                    <label for="newTeam-title">Team name</label>
+                                    <input type="text" id="newTeam-title"  class="form-control">
+                                    <label for="newTeam-title">Team name (e.g Credit Product Hosting)</label>
                                 </div>
                                 <div class="md-form">
                                     <input type="text" id="newTeam-confluenceLink" class="form-control">
-                                    <label for="newTeam-confluenceLink">Confluence link</label>
+                                    <label for="newTeam-confluenceLink">Confluence link  (start with http:// or https://)</label>
                                 </div>
                                 <div class="md-form">
                                     <input type="text" id="newTeam-pageTitle" class="form-control">
-                                    <label for="newTeam-pageTitle">Page title</label>
+                                    <label for="newTeam-pageTitle">Page title (e.g Architecture Overview )</label>
                                 </div>
                                 <div class="md-form">
                                     <input type="text" id="newTeam-projectName" class="form-control">
-                                    <label for="newTeam-projectName">Project name </label>
+                                    <label for="newTeam-projectName">Project name (e.g Ubank) </label>
                                 </div>
                                 <div class="md-form">
                                     <input type="text" id="newTeam-projectDescription" class="form-control">
@@ -126,7 +127,7 @@
                                 </div>
                                 <div class="md-form">
                                     <input type="text" id="newTeam-pageLink" class="form-control">
-                                    <label for="newTeam-pageLink">Confluence link for page</label>
+                                    <label for="newTeam-pageLink">Confluence link for page (start with http:// or https://)</label>
                                 </div>
                                 <button id="addTeam-btn" class="btn btn-rounded btn-block z-depth-0 my-4 waves-effect" style="background: #3f51b5 ">
                                     Add
@@ -143,27 +144,33 @@
                     <!--Top Nav-->
                     <nav class="navbar navbar-expand-lg navbar-dark indigo text-center px-5">
                         <!--Toggle sidebar button-->
-                        <button type="button" id="sidebarCollapse" class="btn btn-info mr-5">
+                        <button type="button" id="sidebarCollapse" class="btn btn-info mr-5 waves-effect">
                             <i class="fas fa-align-left"></i>
                             <span></span>
                         </button>
-                        <h1 class=" white-text"> Home </h1>
+                        <h1 class=" white-text"> InDi App </h1>
                     </nav>
+                <!--Home Content-->
                     <div id ="home-content" class="p-5">
-                        <h2 class="text-center"><strong>List of teams</strong></h2>
-                        <ul id="teamList" class="row ">
+                        <h1 class="text-center"><strong>Home</strong></h1>
+                        <ul id="teamList" class="row mt-5 ">
                             {% for team in teams %}
                             <div class="col-sm-6 col-md-4 mt-3">
                             <!-- Card -->
                                 <div class="card">
                                     <!-- Card image -->
-                                    <img class="card-img-top"  src="../static/images/nab-logo.png" height="188">
+                                    <div class="view overlay">
+                                        <img class="card-img-top"  src="{{team['imagePath']}}" height="188">
+                                        <a href="/{{team['teamId']}}">
+                                            <div class="mask rgba-white-slight"></div>
+                                        </a>
+                                    </div>
                                     <!-- Card content -->
                                     <div class="card-body">
                                         <!-- Title -->
                                         <h4 class="card-title"><a>{{ team['teamId'].upper().replace('-', ' ')}}</a></h4>
-                                        <!-- Text -->
-                                        <ul class="list-group mb-2">
+                                        <!-- Each team details-->
+                                        <ul class="list-group mb-2" style="overflow-y: auto; max-height: 150px">
                                             {% for pageId in team['pageId'] %}
                                             <a href="/{{team['teamId']}}/{{pageId}}"><li class="list-group-item">{{pageId.replace('-', ' ')}}</li></a>
                                             {% endfor %}
@@ -183,11 +190,6 @@
 
 
 
-            <!--Snackbar reference-->
-            <!--https://github.com/FezVrasta/snackbarjs-->
-            <!-- Bootstrap tooltips -->
-
-
     </body>
     <!-- Footer -->
     <footer class="page-footer font-small indigo darken-3 pt-4 ">
@@ -196,10 +198,10 @@
             <!-- Call to action -->
             <ul class="list-unstyled list-inline text-center">
                 <li class="list-inline-item">
-                    <h5 class="mb-1">Learn more about me here!</h5>
+                    <h5 class="mb-1">Find me interested?</h5>
                 </li>
                 <li class="list-inline-item">
-                    <a href="https://bitbucket.org/ImRTee/xproject/src/master/" target="_blank" class="btn btn-outline-white btn-rounded">Deploy me!</a>
+                    <a href="https://bitbucket.org/ImRTee/xproject/src/master/" target="_blank" class="btn btn-outline-white btn-rounded">Learn more</a>
                 </li>
             </ul>
             <!-- Call to action -->

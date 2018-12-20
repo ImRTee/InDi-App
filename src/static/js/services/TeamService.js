@@ -6,8 +6,7 @@ class TeamService {
         var copyTeams = this.teams;
         return copyTeams
     }
-
-
-
-
+    getDefaultImagePath(){
+        return '../static/images/nab-logo.png'
+    }
 }
