@@ -1,0 +1,15 @@
+# How to update a deployed app
+# All you need to update is the 'src' folder located at /var/www/html/interactive-diagram/src
+
+# 1. Change the permission of all files in src to allow the apache user to read and execute the files
+sudo chmod -R 755 src
+# 2. Make images folder writable so that the application can upload the image to there
+sudo chmod a+w /var/www/html/interactive-diagram/src/static/images
+# 3. Update the upload_folder path in app.py with the correct path
+sudo vi /var/www/html/interactive-diagram/src/app.py
+# Find the variable 'UPLOAD_FOLDER' and replace [project-name]  with the one you came up with
+
+# 4. Update the database path in database.py to let the application know where to write the data to
+sudo vi /var/www/html/interactive-diagram/src/common/database.py
+# Find the variable 'mainDataBasePath' and replace [project-name]  with the one you came up with
+
