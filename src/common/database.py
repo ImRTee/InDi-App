@@ -2,7 +2,7 @@ import sqlite3
 from flask import jsonify
 
 class Database():
-    mainDataBasePath = "../storage/main.db"
+    mainDataBasePath = "/var/www/html/[project-name]/storage/main.db"
     def __init__(self):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()

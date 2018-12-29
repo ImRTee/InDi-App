@@ -6,7 +6,7 @@ import sqlite3
 from werkzeug.utils import secure_filename, redirect
 
 # Upload folder: where you want to store upload images, use relative path in production server
-UPLOAD_FOLDER = 'static/images'
+UPLOAD_FOLDER = '/var/www/html/[project-name]/src/static/images'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
