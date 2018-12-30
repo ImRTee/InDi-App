@@ -2,7 +2,7 @@ import sqlite3
 from flask import jsonify
 
 class Database():
-    mainDataBasePath = "/var/www/html/[project-name]/storage/main.db"
+    mainDataBasePath = "../storage/main.db"
     def __init__(self):
         conn = sqlite3.connect(self.mainDataBasePath)
         c = conn.cursor()
@@ -16,6 +16,7 @@ class Database():
             self.createTeamTable()
             # self.insertDefaultImagePath()
 
+    # Insert functions
     def insertButton(self, btnId, content, left, top, width, height, pageId, teamId):
         try:
             conn = sqlite3.connect(self.mainDataBasePath)
@@ -55,22 +56,7 @@ class Database():
         conn.close()
         return 'successful'
 
-    def deleteTeam(self,  teamId):
-        conn = sqlite3.connect(self.mainDataBasePath)
-        c = conn.cursor()
-        c.execute("DELETE FROM Team WHERE  teamId = ? ", (teamId, ))
-        c.execute("DELETE FROM Page WHERE  teamId = ?", (teamId, ))
-        conn.commit()
-        conn.close()
-
-    def deletePage(self, pageId, teamId):
-        conn = sqlite3.connect(self.mainDataBasePath)
-        c = conn.cursor()
-        c.execute("DELETE FROM Page WHERE  pageId = ? and teamId = ? ", (pageId, teamId))
-        c.execute("DELETE FROM PopoverBtn WHERE  pageId = ? and teamId = ?", (pageId, teamId ))
-        conn.commit()
-        conn.close()
-
+    # Update functions
     def updateContent(self, originId, newId, newContent, pageId, teamId):
         try:
             conn = sqlite3.connect(self.mainDataBasePath)
@@ -128,6 +114,29 @@ class Database():
         conn.commit()
         conn.close()
 
+    def deleteTeam(self,  teamId):
+        conn = sqlite3.connect(self.mainDataBasePath)
+        c = conn.cursor()
+        c.execute("DELETE FROM Team WHERE  teamId = ? ", (teamId, ))
+        c.execute("DELETE FROM Page WHERE  teamId = ?", (teamId, ))
+        conn.commit()
+        conn.close()
+
+    def deletePage(self, pageId, teamId):
+        conn = sqlite3.connect(self.mainDataBasePath)
+        c = conn.cursor()
+        c.execute("DELETE FROM Page WHERE  pageId = ? and teamId = ? ", (pageId, teamId))
+        c.execute("DELETE FROM PopoverBtn WHERE  pageId = ? and teamId = ?", (pageId, teamId ))
+        conn.commit()
+        conn.close()
+
+    def deleteBtn(self, btnId, pageId, teamId):
+        conn = sqlite3.connect(self.mainDataBasePath)
+        c = conn.cursor()
+        c.execute("DELETE FROM PopoverBtn WHERE  btnId = ? and pageId = ? and teamId = ?", (btnId, pageId, teamId))
+        conn.commit()
+        conn.close()
+
 
     def createPageTable(self):
         conn = sqlite3.connect(self.mainDataBasePath)
@@ -170,12 +179,7 @@ class Database():
                 )""")
         print("Team Table Created")
 
-    def deleteBtn(self, btnId, pageId, teamId):
-        conn = sqlite3.connect(self.mainDataBasePath)
-        c = conn.cursor()
-        c.execute("DELETE FROM PopoverBtn WHERE  btnId = ? and pageId = ? and teamId = ?", (btnId, pageId, teamId))
-        conn.commit()
-        conn.close()
+
 
 
 
