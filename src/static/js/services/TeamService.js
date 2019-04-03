@@ -7,6 +7,6 @@ class TeamService {
         return copyTeams
     }
     getDefaultImagePath(){
-        return '../static/images/nab-logo.png'
+        return '../static/images/logo.png'
     }
 }
